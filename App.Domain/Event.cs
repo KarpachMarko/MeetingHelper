@@ -10,21 +10,27 @@ public class Event : DomainEntityId
     public string Title { get; set; } = default!;
     
     [MaxLength(2512)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
+    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Description")]
     public string Description { get; set; } = default!;
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime DecissionDate { get; set; }
+    public DateTime DecisionDate { get; set; }
     public double BudgetPerPerson { get; set; }
     public int MinPersonCount { get; set; }
     public int MaxPersonCount { get; set; }
-    public string LocationTitle { get; set; }
-    public string LocationLink { get; set; }
+
+    [MaxLength(256)]
+    public string LocationTitle { get; set; } = default!;
+    [MaxLength(2512)]
+    public string LocationLink { get; set; } = default!;
     
     public Guid MeetingId { get; set; }
-    public Meeting Meeting { get; set; }
+    [Required] 
+    public Meeting? Meeting { get; set; }
     
     public ICollection<EventUser>? EventUsers { get; set; }
     public ICollection<EventNavigation>? EventNavigation { get; set; }
+    public ICollection<Requirement>? Requirements { get; set; }
+    public ICollection<QuestionnaireRelation>? QuestionnaireRelations { get; set; }
 }
