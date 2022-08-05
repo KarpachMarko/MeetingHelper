@@ -2,6 +2,6 @@
 
 public enum RequirementRole
 {
-    Responsible = 0,
+    Responsible = 2,
     User = 1
 }

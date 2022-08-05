@@ -6,9 +6,11 @@ namespace App.Domain;
 public class RequirementOption : DomainEntityId
 {
     [MaxLength(256)]
+    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
     public string Title { get; set; } = default!;
 
     [MaxLength(2512)]
+    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Description")]
     public string Description { get; set; } = default!;
 
     [MaxLength(2512)]
@@ -17,6 +19,6 @@ public class RequirementOption : DomainEntityId
     public float Price { get; set; }
     
     public Guid RequirementId { get; set; }
-    
+    [Required]
     public Requirement? Requirement { get; set; }
 }

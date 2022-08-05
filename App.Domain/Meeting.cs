@@ -10,7 +10,7 @@ public class Meeting : DomainEntityId
     public string Title { get; set; } = default!;
     
     [MaxLength(2512)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
+    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Description")]
     public string Description { get; set; } = default!;
 
     [DataType(DataType.Date)]
@@ -22,5 +22,6 @@ public class Meeting : DomainEntityId
     public double BudgetPerPerson { get; set; }
     
     public ICollection<MeetingUser>? MeetingUsers { get; set; }
-    public ICollection<Event>? Event { get; set; }
+    public ICollection<Event>? Events { get; set; }
+    public ICollection<QuestionnaireRelation>? QuestionnaireRelations { get; set; }
 }
