@@ -1,19 +1,19 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.Transactions;
 using App.Domain.Identity;
 using Base.Contracts.Domain;
 using Base.Domain;
+using Base.Resources.EntityCommon;
 
 namespace App.Domain;
 
 public class BankAccount : DomainEntityId, IDomainEntityUser<AppUser>
 {
     [MaxLength(256)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
+    [Display(ResourceType = typeof(EntityCommon), Name = "Title")]
     public string Title { get; set; } = default!;
     
     [MaxLength(256)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Description")]
+    [Display(ResourceType = typeof(EntityCommon), Name = "Description")]
     public string UserName { get; set; } = default!;
     
     [MaxLength(512)]
@@ -23,5 +23,5 @@ public class BankAccount : DomainEntityId, IDomainEntityUser<AppUser>
     [Required]
     public AppUser? User { get; set; }
     
-    public ICollection<Transaction>? Transactions { get; set; }
+    public ICollection<MoneyTransfer>? MoneyTransfers { get; set; }
 }

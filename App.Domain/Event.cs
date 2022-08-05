@@ -30,7 +30,8 @@ public class Event : DomainEntityId
     public Meeting? Meeting { get; set; }
     
     public ICollection<EventUser>? EventUsers { get; set; }
-    public ICollection<EventNavigation>? EventNavigation { get; set; }
+    public ICollection<EventNavigation>? NextEventNavigations { get; set; }
+    public ICollection<EventNavigation>? PreviousEventNavigations { get; set; }
     public ICollection<Requirement>? Requirements { get; set; }
     public ICollection<QuestionnaireRelation>? QuestionnaireRelations { get; set; }
 }
