@@ -3,7 +3,7 @@ using Base.Domain;
 
 namespace App.Domain;
 
-public class Meeting : DomainEntityId
+public class Event : DomainEntityId
 {
     [MaxLength(256)]
     [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
@@ -12,15 +12,19 @@ public class Meeting : DomainEntityId
     [MaxLength(2512)]
     [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
     public string Description { get; set; } = default!;
-
-    [DataType(DataType.Date)]
+    
     public DateTime StartDate { get; set; }
-    
-    [DataType(DataType.Date)]
     public DateTime EndDate { get; set; }
-    
+    public DateTime DecissionDate { get; set; }
     public double BudgetPerPerson { get; set; }
+    public int MinPersonCount { get; set; }
+    public int MaxPersonCount { get; set; }
+    public string LocationTitle { get; set; }
+    public string LocationLink { get; set; }
     
-    public ICollection<MeetingUser>? MeetingUsers { get; set; }
-    public ICollection<Event>? Event { get; set; }
+    public Guid MeetingId { get; set; }
+    public Meeting Meeting { get; set; }
+    
+    public ICollection<EventUser>? EventUsers { get; set; }
+    public ICollection<EventNavigation>? EventNavigation { get; set; }
 }
