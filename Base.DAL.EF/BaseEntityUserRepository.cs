@@ -1,8 +1,6 @@
-using System.Reflection;
 using Base.Contracts;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
-using Base.Domain;
 using Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;

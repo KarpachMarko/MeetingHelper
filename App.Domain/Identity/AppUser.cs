@@ -6,7 +6,7 @@ namespace App.Domain.Identity;
 public class AppUser : BaseUser
 {
     [MaxLength(128)]
-    public string TelegrammId { get; set; } = default!;
+    public string TelegramId { get; set; } = default!;
     
     public ICollection<MeetingUser>? MeetingUsers { get; set; }
     public ICollection<EventUser>? EventUsers { get; set; }
@@ -15,4 +15,6 @@ public class AppUser : BaseUser
     public ICollection<MoneyTransfer>? SendTransfers { get; set; }
     public ICollection<MoneyTransfer>? ReceiveTransfers { get; set; }
     public ICollection<BankAccount>? BankAccounts { get; set; }
+    
+    public ICollection<RefreshToken>? RefreshTokens { get; set; }
 }

@@ -1,16 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Base.Domain;
+using Base.Resources.EntityCommon;
 
 namespace App.Domain;
 
 public class RequirementOption : DomainEntityId
 {
     [MaxLength(256)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Title")]
+    [Display(ResourceType = typeof(EntityCommon), Name = "Title")]
     public string Title { get; set; } = default!;
 
     [MaxLength(2512)]
-    [Display(ResourceType = typeof(Base.Resources.EntityCommon.EntityCommon), Name = "Description")]
+    [Display(ResourceType = typeof(EntityCommon), Name = "Description")]
     public string Description { get; set; } = default!;
 
     [MaxLength(2512)]
