@@ -8,11 +8,11 @@ public interface IAppUnitOfWork : IUnitOfWork
     Task RemoveExpiredRefreshTokens(Guid userId);
     
     IAnswerOptionRepository AnswerOptions { get; }
-    IBankAccountRepository BankACcounts { get; }
+    IBankAccountRepository BankAccounts { get; }
     IEventNavigationRepository EventNavigations { get; }
     IEventRepository Events { get; }
     IEventUserRepository EventUsers { get; }
-    IMeetingRepository Metings { get; }
+    IMeetingRepository Meetings { get; }
     IMeetingUserRepository MeetingUsers { get; }
     IMoneyTransferRepository MoneyTransfers { get; }
     IPaymentRepository Payments { get; }

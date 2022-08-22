@@ -11,7 +11,7 @@ public interface IAppBLL : IBll
     IEventNavigationService EventNavigations { get; }
     IEventService Events { get; }
     IEventUserService EventUsers { get; }
-    IMeetingService Metings { get; }
+    IMeetingService Meetings { get; }
     IMeetingUserService MeetingUsers { get; }
     IMoneyTransferService MoneyTransfers { get; }
     IPaymentService Payments { get; }

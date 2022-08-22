@@ -4,7 +4,7 @@ using Base.Contracts.Domain;
 
 namespace App.Contracts.DAL.Repositories;
 
-public interface IRequirementRepository : IEntityRepository<Requirement>, IRequirementRepositoryCustom<Requirement>
+public interface IRequirementRepository : IEntityUserDependentRepository<Requirement>, IRequirementRepositoryCustom<Requirement>
 {
     
 }

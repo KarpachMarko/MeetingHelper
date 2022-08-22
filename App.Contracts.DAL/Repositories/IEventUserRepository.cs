@@ -5,7 +5,7 @@ using Base.Contracts.Domain;
 
 namespace App.Contracts.DAL.Repositories;
 
-public interface IEventUserRepository : IEntityUserRepository<EventUser, AppUser>, IEventRepositoryCustom<EventUser>
+public interface IEventUserRepository : IEntityUserRepository<EventUser, AppUser>, IEventUserRepositoryCustom<EventUser>
 {
     
 }

@@ -1,4 +1,6 @@
+using App.Contracts.DAL;
 using App.DAL.EF;
+using App.DAL.EF.Repositories;
 using App.Domain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +11,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("NpgsqlConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+
+builder.Services.AddScoped<IAppUnitOfWork, AppUow>();
+
+builder.Services.AddAutoMapper(typeof(App.DAL.EF.AutoMapperConfig));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
