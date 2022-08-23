@@ -14,7 +14,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IAppUnitOfWork, AppUow>();
 
-builder.Services.AddAutoMapper(typeof(App.DAL.EF.AutoMapperConfig));
+builder.Services.AddAutoMapper(
+    typeof(App.DAL.EF.AutoMapperConfig),
+    typeof(App.BLL.AutoMapperConfig)
+);
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 

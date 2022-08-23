@@ -1,13 +1,12 @@
 ﻿using App.Contracts.BLL.Services;
-using App.Contracts.DAL.Repositories;
 using Base.Contracts.BLL;
 
 namespace App.Contracts.BLL;
 
-public interface IAppBLL : IBll
+public interface IAppBll : IBll
 {
     IAnswerOptionService AnswerOptions { get; }
-    IBankAccountService BankACcounts { get; }
+    IBankAccountService BankAccounts { get; }
     IEventNavigationService EventNavigations { get; }
     IEventService Events { get; }
     IEventUserService EventUsers { get; }

@@ -8,15 +8,14 @@
 
     <ItemGroup>
       <PackageReference Include="AutoMapper" Version="11.0.1" />
-      <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.8" />
-      <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\App.Contracts.DAL\App.Contracts.DAL.csproj" />
+      <ProjectReference Include="..\App.BLL.DTO\App.BLL.DTO.csproj" />
+      <ProjectReference Include="..\App.Contracts.BLL\App.Contracts.BLL.csproj" />
       <ProjectReference Include="..\App.DAL.DTO\App.DAL.DTO.csproj" />
-      <ProjectReference Include="..\App.Domain\App.Domain.csproj" />
-      <ProjectReference Include="..\Base.DAL.EF\Base.DAL.EF.csproj" />
+      <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
+      <ProjectReference Include="..\Base.BLL\Base.BLL.csproj" />
       <ProjectReference Include="..\Base.DAL\Base.DAL.csproj" />
     </ItemGroup>
 
