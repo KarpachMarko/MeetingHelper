@@ -11,7 +11,6 @@ public class EventUser : DomainEntityId, IDomainEntityUser<AppUser>
     public EventStatus Status { get; set; }
     
     public Guid EventId { get; set; }
-    [Required]
     public Event? Event { get; set; }
     
     public Guid UserId { get; set; }

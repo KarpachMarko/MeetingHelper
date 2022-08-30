@@ -9,6 +9,5 @@ public class AnswerOption : DomainEntityId
     public string Answer { get; set; } = default!;
 
     public Guid QuestionnaireId { get; set; }
-    [Required]
     public Questionnaire? Questionnaire { get; set; }
 }

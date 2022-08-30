@@ -20,7 +20,6 @@ public class BankAccount : DomainEntityId, IDomainEntityUser<AppUser>
     public string Number { get; set; } = default!;
     
     public Guid UserId { get; set; }
-    [Required]
     public AppUser? User { get; set; }
     
     public ICollection<MoneyTransfer>? MoneyTransfers { get; set; }

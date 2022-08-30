@@ -19,6 +19,5 @@ public class RequirementOption : DomainEntityId
     public float Price { get; set; }
     
     public Guid RequirementId { get; set; }
-    [Required]
     public Requirement? Requirement { get; set; }
 }

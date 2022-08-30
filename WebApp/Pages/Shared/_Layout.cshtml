@@ -17,6 +17,56 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
+            <div class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarLangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="AnswerOption" asp-action="Index">AnswerOption</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="BankAccount" asp-action="Index">BankAccount</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Event" asp-action="Index">Event</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="EventNavigation" asp-action="Index">EventNavigation</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="EventUser" asp-action="Index">EventUser</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Meeting" asp-action="Index">Meeting</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MeetingUser" asp-action="Index">MeetingUser</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="MoneyTransfer" asp-action="Index">MoneyTransfer</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Payment" asp-action="Index">Payment</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Questionnaire" asp-action="Index">Questionnaire</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="QuestionnaireRelation" asp-action="Index">QuestionnaireRelation</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="Requirement" asp-action="Index">Requirement</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="RequirementOption" asp-action="Index">RequirementOption</a>
+                    </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-area="Admin" asp-controller="RequirementUser" asp-action="Index">RequirementUser</a>
+                    </l1>
+                </ul>
+            </div>
+            
+            <partial name="_LanguageSelection"/>
+            
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
@@ -39,7 +89,8 @@
 
 <footer class="border-top footer text-muted">
     <div class="container">
-        &copy; 2022 - WebApp - <a asp-area="" asp-page="/Privacy">Privacy</a>
+        &copy; 2022 - WebApp | UI Culture: @Thread.CurrentThread.CurrentUICulture.Name | Culture: @Thread.CurrentThread.CurrentCulture.Name
+        <a asp-area="" asp-page="/Privacy">Privacy</a>
     </div>
 </footer>
 

@@ -26,7 +26,6 @@ public class Event : DomainEntityId
     public string LocationLink { get; set; } = default!;
     
     public Guid MeetingId { get; set; }
-    [Required] 
     public Meeting? Meeting { get; set; }
     
     public ICollection<EventUser>? EventUsers { get; set; }

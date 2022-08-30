@@ -13,11 +13,9 @@ public class MoneyTransfer : DomainEntityId
     public MoneyTransferType Type { get; set; }
 
     public Guid SenderId { get; set; }
-    [Required]
     public AppUser? Sender { get; set; }
     
     public Guid ReceiverId { get; set; }
-    [Required]
     public AppUser? Receiver { get; set; }
 
     public Guid? ReceiverBankId { get; set; }
