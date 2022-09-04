@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class EventNavigationController : Controller
     {
         private readonly AppDbContext _context;
@@ -60,7 +59,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PreviousEventId,NextEventId,Id")] EventNavigation eventNavigation)
+        public async Task<IActionResult> Create(
+            [Bind("PreviousEventId,NextEventId,Id")] EventNavigation eventNavigation)
         {
             if (ModelState.IsValid)
             {
@@ -69,8 +69,10 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["NextEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.NextEventId);
-            ViewData["PreviousEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
+            ViewData["PreviousEventId"] =
+                new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
             return View(eventNavigation);
         }
 
@@ -87,8 +89,10 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["NextEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.NextEventId);
-            ViewData["PreviousEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
+            ViewData["PreviousEventId"] =
+                new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
             return View(eventNavigation);
         }
 
@@ -97,7 +101,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("PreviousEventId,NextEventId,Id")] EventNavigation eventNavigation)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("PreviousEventId,NextEventId,Id")] EventNavigation eventNavigation)
         {
             if (id != eventNavigation.Id)
             {
@@ -122,10 +127,13 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["NextEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.NextEventId);
-            ViewData["PreviousEventId"] = new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
+            ViewData["PreviousEventId"] =
+                new SelectList(_context.Events, "Id", "Description", eventNavigation.PreviousEventId);
             return View(eventNavigation);
         }
 
@@ -158,19 +166,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.EventNavigations'  is null.");
             }
+
             var eventNavigation = await _context.EventNavigations.FindAsync(id);
             if (eventNavigation != null)
             {
                 _context.EventNavigations.Remove(eventNavigation);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EventNavigationExists(Guid id)
         {
-          return (_context.EventNavigations?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.EventNavigations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class PaymentController : Controller
     {
         private readonly AppDbContext _context;
@@ -69,7 +68,9 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", payment.UserId);
             return View(payment);
         }
@@ -87,7 +88,9 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", payment.UserId);
             return View(payment);
         }
@@ -97,7 +100,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,Timestamp,RequirementId,UserId,Id")] Payment payment)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Amount,Timestamp,RequirementId,UserId,Id")] Payment payment)
         {
             if (id != payment.Id)
             {
@@ -122,9 +126,12 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", payment.UserId);
             return View(payment);
         }
@@ -158,19 +165,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.Payments'  is null.");
             }
+
             var payment = await _context.Payments.FindAsync(id);
             if (payment != null)
             {
                 _context.Payments.Remove(payment);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool PaymentExists(Guid id)
         {
-          return (_context.Payments?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Payments?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

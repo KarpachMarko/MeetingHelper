@@ -25,12 +25,4 @@
       <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Areas\Admin\Views\QuestionnaireRelation\Create.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Views\QuestionnaireRelation\Delete.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Views\QuestionnaireRelation\Details.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Views\QuestionnaireRelation\Edit.cshtml" />
-      <_ContentIncludedByDefault Remove="Areas\Admin\Views\QuestionnaireRelation\Index.cshtml" />
-    </ItemGroup>
-
 </Project>

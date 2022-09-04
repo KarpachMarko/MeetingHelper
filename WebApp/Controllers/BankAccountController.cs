@@ -4,94 +4,96 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
-    public class EventController : Controller
+    public class BankAccountController : Controller
     {
         private readonly AppDbContext _context;
 
-        public EventController(AppDbContext context)
+        public BankAccountController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/Event
+        // GET: Admin/BankAccount
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.Events.Include(b => b.Meeting);
+            var appDbContext = _context.BankAccounts.Include(b => b.User);
             return View(await appDbContext.ToListAsync());
         }
 
-        // GET: Admin/Event/Details/5
+        // GET: Admin/BankAccount/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.Events == null)
+            if (id == null || _context.BankAccounts == null)
             {
                 return NotFound();
             }
 
-            var dbEvent = await _context.Events
-                .Include(b => b.Meeting)
+            var bankAccount = await _context.BankAccounts
+                .Include(b => b.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbEvent == null)
+            if (bankAccount == null)
             {
                 return NotFound();
             }
 
-            return View(dbEvent);
+            return View(bankAccount);
         }
 
-        // GET: Admin/Event/Create
+        // GET: Admin/BankAccount/Create
         public IActionResult Create()
         {
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId");
             return View();
         }
 
-        // POST: Admin/Event/Create
+        // POST: Admin/BankAccount/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,StartDate,EndDate,DecisionDate,BudgetPerPerson,MinPersonCount,MaxPersonCount,LocationTitle,LocationLink,MeetingId,Id")] Event newEvent)
+        public async Task<IActionResult> Create([Bind("Title,UserName,Number,UserId,Id")] BankAccount bankAccount)
         {
             if (ModelState.IsValid)
             {
-                newEvent.Id = Guid.NewGuid();
-                _context.Add(newEvent);
+                bankAccount.Id = Guid.NewGuid();
+                _context.Add(bankAccount);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", newEvent.MeetingId);
-            return View(newEvent);
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            return View(bankAccount);
         }
 
-        // GET: Admin/Event/Edit/5
+        // GET: Admin/BankAccount/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.Events == null)
+            if (id == null || _context.BankAccounts == null)
             {
                 return NotFound();
             }
 
-            var dbEvent = await _context.Events.FindAsync(id);
-            if (dbEvent == null)
+            var bankAccount = await _context.BankAccounts.FindAsync(id);
+            if (bankAccount == null)
             {
                 return NotFound();
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", dbEvent.MeetingId);
-            return View(dbEvent);
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            return View(bankAccount);
         }
 
-        // POST: Admin/Event/Edit/5
+        // POST: Admin/BankAccount/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,StartDate,EndDate,DecisionDate,BudgetPerPerson,MinPersonCount,MaxPersonCount,LocationTitle,LocationLink,MeetingId,Id")] Event editEvent)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Title,UserName,Number,UserId,Id")] BankAccount bankAccount)
         {
-            if (id != editEvent.Id)
+            if (id != bankAccount.Id)
             {
                 return NotFound();
             }
@@ -100,12 +102,12 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(editEvent);
+                    _context.Update(bankAccount);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!EventExists(editEvent.Id))
+                    if (!BankAccountExists(bankAccount.Id))
                     {
                         return NotFound();
                     }
@@ -114,53 +116,56 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", editEvent.MeetingId);
-            return View(editEvent);
+
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            return View(bankAccount);
         }
 
-        // GET: Admin/Event/Delete/5
+        // GET: Admin/BankAccount/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.Events == null)
+            if (id == null || _context.BankAccounts == null)
             {
                 return NotFound();
             }
 
-            var dbEvent = await _context.Events
-                .Include(b => b.Meeting)
+            var bankAccount = await _context.BankAccounts
+                .Include(b => b.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (dbEvent == null)
+            if (bankAccount == null)
             {
                 return NotFound();
             }
 
-            return View(dbEvent);
+            return View(bankAccount);
         }
 
-        // POST: Admin/Event/Delete/5
+        // POST: Admin/BankAccount/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Events == null)
+            if (_context.BankAccounts == null)
             {
-                return Problem("Entity set 'AppDbContext.Events'  is null.");
+                return Problem("Entity set 'AppDbContext.BankAccounts'  is null.");
             }
-            var dbEvent = await _context.Events.FindAsync(id);
-            if (dbEvent != null)
+
+            var bankAccount = await _context.BankAccounts.FindAsync(id);
+            if (bankAccount != null)
             {
-                _context.Events.Remove(dbEvent);
+                _context.BankAccounts.Remove(bankAccount);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool EventExists(Guid id)
+        private bool BankAccountExists(Guid id)
         {
-          return (_context.Events?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.BankAccounts?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class EventUserController : Controller
     {
         private readonly AppDbContext _context;
@@ -69,6 +68,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", eventUser.EventId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", eventUser.UserId);
             return View(eventUser);
@@ -87,6 +87,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", eventUser.EventId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", eventUser.UserId);
             return View(eventUser);
@@ -122,8 +123,10 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", eventUser.EventId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", eventUser.UserId);
             return View(eventUser);
@@ -158,19 +161,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.EventUsers'  is null.");
             }
+
             var eventUser = await _context.EventUsers.FindAsync(id);
             if (eventUser != null)
             {
                 _context.EventUsers.Remove(eventUser);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool EventUserExists(Guid id)
         {
-          return (_context.EventUsers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.EventUsers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

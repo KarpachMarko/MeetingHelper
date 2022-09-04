@@ -6,9 +6,6 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
-Thread.CurrentThread.CurrentCulture = new CultureInfo("en-GB");
-Thread.CurrentThread.CurrentUICulture = new CultureInfo("en-GB");
-
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

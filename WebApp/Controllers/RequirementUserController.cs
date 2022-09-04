@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class RequirementUserController : Controller
     {
         private readonly AppDbContext _context;
@@ -60,7 +59,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Role,Proportion,RequirementId,UserId,Id")] RequirementUser requirementUser)
+        public async Task<IActionResult> Create(
+            [Bind("Role,Proportion,RequirementId,UserId,Id")] RequirementUser requirementUser)
         {
             if (ModelState.IsValid)
             {
@@ -69,7 +69,9 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
             return View(requirementUser);
         }
@@ -87,7 +89,9 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
             return View(requirementUser);
         }
@@ -97,7 +101,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Role,Proportion,RequirementId,UserId,Id")] RequirementUser requirementUser)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Role,Proportion,RequirementId,UserId,Id")] RequirementUser requirementUser)
         {
             if (id != requirementUser.Id)
             {
@@ -122,9 +127,12 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
             return View(requirementUser);
         }
@@ -158,19 +166,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.RequirementUsers'  is null.");
             }
+
             var requirementUser = await _context.RequirementUsers.FindAsync(id);
             if (requirementUser != null)
             {
                 _context.RequirementUsers.Remove(requirementUser);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RequirementUserExists(Guid id)
         {
-          return (_context.RequirementUsers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.RequirementUsers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

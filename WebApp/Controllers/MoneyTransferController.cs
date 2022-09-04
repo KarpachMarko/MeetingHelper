@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class MoneyTransferController : Controller
     {
         private readonly AppDbContext _context;
@@ -60,7 +59,9 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")] MoneyTransfer moneyTransfer)
+        public async Task<IActionResult> Create(
+            [Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")]
+            MoneyTransfer moneyTransfer)
         {
             if (ModelState.IsValid)
             {
@@ -69,6 +70,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
             ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
             return View(moneyTransfer);
@@ -87,6 +89,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
             ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
             return View(moneyTransfer);
@@ -97,7 +100,9 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")] MoneyTransfer moneyTransfer)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")]
+            MoneyTransfer moneyTransfer)
         {
             if (id != moneyTransfer.Id)
             {
@@ -122,8 +127,10 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
             ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
             return View(moneyTransfer);
@@ -158,19 +165,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.MoneyTransfers'  is null.");
             }
+
             var moneyTransfer = await _context.MoneyTransfers.FindAsync(id);
             if (moneyTransfer != null)
             {
                 _context.MoneyTransfers.Remove(moneyTransfer);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool MoneyTransferExists(Guid id)
         {
-          return (_context.MoneyTransfers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.MoneyTransfers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

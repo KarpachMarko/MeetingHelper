@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class RequirementOptionController : Controller
     {
         private readonly AppDbContext _context;
@@ -58,7 +57,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
+        public async Task<IActionResult> Create(
+            [Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
         {
             if (ModelState.IsValid)
             {
@@ -67,7 +67,9 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
             return View(requirementOption);
         }
 
@@ -84,7 +86,9 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
             return View(requirementOption);
         }
 
@@ -93,7 +97,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
         {
             if (id != requirementOption.Id)
             {
@@ -118,9 +123,12 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
+
+            ViewData["RequirementId"] =
+                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
             return View(requirementOption);
         }
 
@@ -152,19 +160,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.RequirementOptions'  is null.");
             }
+
             var requirementOption = await _context.RequirementOptions.FindAsync(id);
             if (requirementOption != null)
             {
                 _context.RequirementOptions.Remove(requirementOption);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RequirementOptionExists(Guid id)
         {
-          return (_context.RequirementOptions?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.RequirementOptions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

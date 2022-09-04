@@ -3,9 +3,8 @@ using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class MeetingController : Controller
     {
         private readonly AppDbContext _context;
@@ -18,9 +17,9 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/Meeting
         public async Task<IActionResult> Index()
         {
-              return _context.Meetings != null ? 
-                          View(await _context.Meetings.ToListAsync()) :
-                          Problem("Entity set 'AppDbContext.Meetings'  is null.");
+            return _context.Meetings != null
+                ? View(await _context.Meetings.ToListAsync())
+                : Problem("Entity set 'AppDbContext.Meetings'  is null.");
         }
 
         // GET: Admin/Meeting/Details/5
@@ -52,7 +51,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Description,StartDate,EndDate,BudgetPerPerson,Id")] Meeting meeting)
+        public async Task<IActionResult> Create(
+            [Bind("Title,Description,StartDate,EndDate,BudgetPerPerson,Id")] Meeting meeting)
         {
             if (ModelState.IsValid)
             {
@@ -61,6 +61,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             return View(meeting);
         }
 
@@ -77,6 +78,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             return View(meeting);
         }
 
@@ -85,7 +87,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,StartDate,EndDate,BudgetPerPerson,Id")] Meeting meeting)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Title,Description,StartDate,EndDate,BudgetPerPerson,Id")] Meeting meeting)
         {
             if (id != meeting.Id)
             {
@@ -110,8 +113,10 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             return View(meeting);
         }
 
@@ -142,19 +147,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.Meetings'  is null.");
             }
+
             var meeting = await _context.Meetings.FindAsync(id);
             if (meeting != null)
             {
                 _context.Meetings.Remove(meeting);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool MeetingExists(Guid id)
         {
-          return (_context.Meetings?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Meetings?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

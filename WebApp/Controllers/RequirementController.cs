@@ -8,91 +8,97 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
-    public class QuestionnaireController : Controller
+    public class RequirementController : Controller
     {
         private readonly AppDbContext _context;
 
-        public QuestionnaireController(AppDbContext context)
+        public RequirementController(AppDbContext context)
         {
             _context = context;
         }
 
-        // GET: Admin/Questionnaire
+        // GET: Admin/Requirement
         public async Task<IActionResult> Index()
         {
-              return _context.Questionnaires != null ? 
-                          View(await _context.Questionnaires.ToListAsync()) :
-                          Problem("Entity set 'AppDbContext.Questionnaires'  is null.");
+            var appDbContext = _context.Requirements.Include(r => r.Event);
+            return View(await appDbContext.ToListAsync());
         }
 
-        // GET: Admin/Questionnaire/Details/5
+        // GET: Admin/Requirement/Details/5
         public async Task<IActionResult> Details(Guid? id)
         {
-            if (id == null || _context.Questionnaires == null)
+            if (id == null || _context.Requirements == null)
             {
                 return NotFound();
             }
 
-            var questionnaire = await _context.Questionnaires
+            var requirement = await _context.Requirements
+                .Include(r => r.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (questionnaire == null)
+            if (requirement == null)
             {
                 return NotFound();
             }
 
-            return View(questionnaire);
+            return View(requirement);
         }
 
-        // GET: Admin/Questionnaire/Create
+        // GET: Admin/Requirement/Create
         public IActionResult Create()
         {
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description");
             return View();
         }
 
-        // POST: Admin/Questionnaire/Create
+        // POST: Admin/Requirement/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Question,QuestionnaireMsgId,Anonymous,SingleAnswer,ActiveScince,Deadline,Id")] Questionnaire questionnaire)
+        public async Task<IActionResult> Create(
+            [Bind("Title,Description,BudgetPerPerson,DecisionDate,PaymentDate,EventId,Id")] Requirement requirement)
         {
             if (ModelState.IsValid)
             {
-                questionnaire.Id = Guid.NewGuid();
-                _context.Add(questionnaire);
+                requirement.Id = Guid.NewGuid();
+                _context.Add(requirement);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(questionnaire);
+
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", requirement.EventId);
+            return View(requirement);
         }
 
-        // GET: Admin/Questionnaire/Edit/5
+        // GET: Admin/Requirement/Edit/5
         public async Task<IActionResult> Edit(Guid? id)
         {
-            if (id == null || _context.Questionnaires == null)
+            if (id == null || _context.Requirements == null)
             {
                 return NotFound();
             }
 
-            var questionnaire = await _context.Questionnaires.FindAsync(id);
-            if (questionnaire == null)
+            var requirement = await _context.Requirements.FindAsync(id);
+            if (requirement == null)
             {
                 return NotFound();
             }
-            return View(questionnaire);
+
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", requirement.EventId);
+            return View(requirement);
         }
 
-        // POST: Admin/Questionnaire/Edit/5
+        // POST: Admin/Requirement/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Question,QuestionnaireMsgId,Anonymous,SingleAnswer,ActiveScince,Deadline,Id")] Questionnaire questionnaire)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("Title,Description,BudgetPerPerson,DecisionDate,PaymentDate,EventId,Id")] Requirement requirement)
         {
-            if (id != questionnaire.Id)
+            if (id != requirement.Id)
             {
                 return NotFound();
             }
@@ -101,12 +107,12 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 try
                 {
-                    _context.Update(questionnaire);
+                    _context.Update(requirement);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!QuestionnaireExists(questionnaire.Id))
+                    if (!RequirementExists(requirement.Id))
                     {
                         return NotFound();
                     }
@@ -115,51 +121,56 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            return View(questionnaire);
+
+            ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", requirement.EventId);
+            return View(requirement);
         }
 
-        // GET: Admin/Questionnaire/Delete/5
+        // GET: Admin/Requirement/Delete/5
         public async Task<IActionResult> Delete(Guid? id)
         {
-            if (id == null || _context.Questionnaires == null)
+            if (id == null || _context.Requirements == null)
             {
                 return NotFound();
             }
 
-            var questionnaire = await _context.Questionnaires
+            var requirement = await _context.Requirements
+                .Include(r => r.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (questionnaire == null)
+            if (requirement == null)
             {
                 return NotFound();
             }
 
-            return View(questionnaire);
+            return View(requirement);
         }
 
-        // POST: Admin/Questionnaire/Delete/5
+        // POST: Admin/Requirement/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            if (_context.Questionnaires == null)
+            if (_context.Requirements == null)
             {
-                return Problem("Entity set 'AppDbContext.Questionnaires'  is null.");
+                return Problem("Entity set 'AppDbContext.Requirements'  is null.");
             }
-            var questionnaire = await _context.Questionnaires.FindAsync(id);
-            if (questionnaire != null)
+
+            var requirement = await _context.Requirements.FindAsync(id);
+            if (requirement != null)
             {
-                _context.Questionnaires.Remove(questionnaire);
+                _context.Requirements.Remove(requirement);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool QuestionnaireExists(Guid id)
+        private bool RequirementExists(Guid id)
         {
-          return (_context.Questionnaires?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Requirements?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

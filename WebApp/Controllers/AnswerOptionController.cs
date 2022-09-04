@@ -1,16 +1,11 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using App.DAL.EF;
+using App.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class AnswerOptionController : Controller
     {
         private readonly AppDbContext _context;
@@ -67,7 +62,9 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
+
+            ViewData["QuestionnaireId"] =
+                new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
             return View(answerOption);
         }
 
@@ -84,7 +81,9 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
+
+            ViewData["QuestionnaireId"] =
+                new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
             return View(answerOption);
         }
 
@@ -118,9 +117,12 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
+
+            ViewData["QuestionnaireId"] =
+                new SelectList(_context.Questionnaires, "Id", "Question", answerOption.QuestionnaireId);
             return View(answerOption);
         }
 
@@ -152,19 +154,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.AnswerOptions'  is null.");
             }
+
             var answerOption = await _context.AnswerOptions.FindAsync(id);
             if (answerOption != null)
             {
                 _context.AnswerOptions.Remove(answerOption);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool AnswerOptionExists(Guid id)
         {
-          return (_context.AnswerOptions?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.AnswerOptions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

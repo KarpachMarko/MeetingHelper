@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class MeetingUserController : Controller
     {
         private readonly AppDbContext _context;
@@ -69,6 +68,7 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
             return View(meetingUser);
@@ -87,6 +87,7 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
             return View(meetingUser);
@@ -122,8 +123,10 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
             ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
             return View(meetingUser);
@@ -158,19 +161,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.MeetingUsers'  is null.");
             }
+
             var meetingUser = await _context.MeetingUsers.FindAsync(id);
             if (meetingUser != null)
             {
                 _context.MeetingUsers.Remove(meetingUser);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool MeetingUserExists(Guid id)
         {
-          return (_context.MeetingUsers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.MeetingUsers?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

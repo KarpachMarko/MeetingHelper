@@ -8,9 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using App.DAL.EF;
 using App.Domain;
 
-namespace WebApp.Areas.Admin.Controllers
+namespace WebApp.Controllers
 {
-    [Area("Admin")]
     public class QuestionnaireRelationController : Controller
     {
         private readonly AppDbContext _context;
@@ -23,7 +22,8 @@ namespace WebApp.Areas.Admin.Controllers
         // GET: Admin/QuestionnaireRelation
         public async Task<IActionResult> Index()
         {
-            var appDbContext = _context.QuestionnaireRelations.Include(q => q.Event).Include(q => q.Meeting).Include(q => q.Questionnaire).Include(q => q.Requirement);
+            var appDbContext = _context.QuestionnaireRelations.Include(q => q.Event).Include(q => q.Meeting)
+                .Include(q => q.Questionnaire).Include(q => q.Requirement);
             return View(await appDbContext.ToListAsync());
         }
 
@@ -64,7 +64,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("QuestionnaireId,MeetingId,EventId,RequirementId,Id")] QuestionnaireRelation questionnaireRelation)
+        public async Task<IActionResult> Create(
+            [Bind("QuestionnaireId,MeetingId,EventId,RequirementId,Id")] QuestionnaireRelation questionnaireRelation)
         {
             if (ModelState.IsValid)
             {
@@ -73,10 +74,14 @@ namespace WebApp.Areas.Admin.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", questionnaireRelation.EventId);
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", questionnaireRelation.QuestionnaireId);
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", questionnaireRelation.RequirementId);
+            ViewData["MeetingId"] =
+                new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
+            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question",
+                questionnaireRelation.QuestionnaireId);
+            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description",
+                questionnaireRelation.RequirementId);
             return View(questionnaireRelation);
         }
 
@@ -93,10 +98,14 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return NotFound();
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", questionnaireRelation.EventId);
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", questionnaireRelation.QuestionnaireId);
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", questionnaireRelation.RequirementId);
+            ViewData["MeetingId"] =
+                new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
+            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question",
+                questionnaireRelation.QuestionnaireId);
+            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description",
+                questionnaireRelation.RequirementId);
             return View(questionnaireRelation);
         }
 
@@ -105,7 +114,8 @@ namespace WebApp.Areas.Admin.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("QuestionnaireId,MeetingId,EventId,RequirementId,Id")] QuestionnaireRelation questionnaireRelation)
+        public async Task<IActionResult> Edit(Guid id,
+            [Bind("QuestionnaireId,MeetingId,EventId,RequirementId,Id")] QuestionnaireRelation questionnaireRelation)
         {
             if (id != questionnaireRelation.Id)
             {
@@ -130,12 +140,17 @@ namespace WebApp.Areas.Admin.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction(nameof(Index));
             }
+
             ViewData["EventId"] = new SelectList(_context.Events, "Id", "Description", questionnaireRelation.EventId);
-            ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
-            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question", questionnaireRelation.QuestionnaireId);
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description", questionnaireRelation.RequirementId);
+            ViewData["MeetingId"] =
+                new SelectList(_context.Meetings, "Id", "Description", questionnaireRelation.MeetingId);
+            ViewData["QuestionnaireId"] = new SelectList(_context.Questionnaires, "Id", "Question",
+                questionnaireRelation.QuestionnaireId);
+            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description",
+                questionnaireRelation.RequirementId);
             return View(questionnaireRelation);
         }
 
@@ -170,19 +185,20 @@ namespace WebApp.Areas.Admin.Controllers
             {
                 return Problem("Entity set 'AppDbContext.QuestionnaireRelations'  is null.");
             }
+
             var questionnaireRelation = await _context.QuestionnaireRelations.FindAsync(id);
             if (questionnaireRelation != null)
             {
                 _context.QuestionnaireRelations.Remove(questionnaireRelation);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool QuestionnaireRelationExists(Guid id)
         {
-          return (_context.QuestionnaireRelations?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.QuestionnaireRelations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
