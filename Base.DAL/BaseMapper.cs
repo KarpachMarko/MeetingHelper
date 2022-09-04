@@ -1,12 +1,13 @@
-﻿using Base.Contracts;
+﻿using AutoMapper;
+using Base.Contracts;
 
 namespace Base.DAL;
 
 public class BaseMapper<TOut, TIn> : IMapper<TOut, TIn>
 {
-    protected readonly AutoMapper.IMapper Mapper;
+    protected readonly IMapper Mapper;
 
-    public BaseMapper(AutoMapper.IMapper mapper)
+    public BaseMapper(IMapper mapper)
     {
         Mapper = mapper;
     }

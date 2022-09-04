@@ -50,7 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId");
             return View();
         }
 
@@ -70,7 +70,7 @@ namespace WebApp.Controllers
             }
 
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", meetingUser.UserId);
             return View(meetingUser);
         }
 
@@ -89,7 +89,7 @@ namespace WebApp.Controllers
             }
 
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", meetingUser.UserId);
             return View(meetingUser);
         }
 
@@ -128,7 +128,7 @@ namespace WebApp.Controllers
             }
 
             ViewData["MeetingId"] = new SelectList(_context.Meetings, "Id", "Description", meetingUser.MeetingId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", meetingUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", meetingUser.UserId);
             return View(meetingUser);
         }
 

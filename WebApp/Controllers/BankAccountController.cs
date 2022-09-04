@@ -44,7 +44,7 @@ namespace WebApp.Controllers
         // GET: Admin/BankAccount/Create
         public IActionResult Create()
         {
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId");
             return View();
         }
 
@@ -63,7 +63,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", bankAccount.UserId);
             return View(bankAccount);
         }
 
@@ -81,7 +81,7 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", bankAccount.UserId);
             return View(bankAccount);
         }
 
@@ -120,7 +120,7 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", bankAccount.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", bankAccount.UserId);
             return View(bankAccount);
         }
 

@@ -3,7 +3,6 @@ using Base.Contracts.BLL;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 
 namespace Base.BLL;
 

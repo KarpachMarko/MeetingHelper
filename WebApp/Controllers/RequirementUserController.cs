@@ -50,7 +50,7 @@ namespace WebApp.Controllers
         public IActionResult Create()
         {
             ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId");
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId");
             return View();
         }
 
@@ -72,7 +72,7 @@ namespace WebApp.Controllers
 
             ViewData["RequirementId"] =
                 new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", requirementUser.UserId);
             return View(requirementUser);
         }
 
@@ -92,7 +92,7 @@ namespace WebApp.Controllers
 
             ViewData["RequirementId"] =
                 new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", requirementUser.UserId);
             return View(requirementUser);
         }
 
@@ -133,7 +133,7 @@ namespace WebApp.Controllers
 
             ViewData["RequirementId"] =
                 new SelectList(_context.Requirements, "Id", "Description", requirementUser.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegrammId", requirementUser.UserId);
+            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", requirementUser.UserId);
             return View(requirementUser);
         }
 

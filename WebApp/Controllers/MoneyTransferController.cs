@@ -49,8 +49,8 @@ namespace WebApp.Controllers
         // GET: Admin/MoneyTransfer/Create
         public IActionResult Create()
         {
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId");
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId");
+            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId");
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId");
             return View();
         }
 
@@ -71,8 +71,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
+            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
             return View(moneyTransfer);
         }
 
@@ -90,8 +90,8 @@ namespace WebApp.Controllers
                 return NotFound();
             }
 
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
+            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
             return View(moneyTransfer);
         }
 
@@ -131,8 +131,8 @@ namespace WebApp.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegrammId", moneyTransfer.SenderId);
+            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
+            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
             return View(moneyTransfer);
         }
 

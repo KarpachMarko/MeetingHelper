@@ -2,7 +2,6 @@ using Base.Contracts;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Base.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Base.DAL.EF;
