@@ -18,14 +18,8 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarLangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Admin</a>
+                <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarLangDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Controllers</a>
                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                    <l1 class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="AnswerOption" asp-action="Index">AnswerOption</a>
-                    </l1>
-                    <l1 class="nav-item">
-                        <a class="nav-link text-dark" asp-controller="BankAccount" asp-action="Index">BankAccount</a>
-                    </l1>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Event" asp-action="Index">Event</a>
                     </l1>
@@ -41,18 +35,33 @@
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="MeetingUser" asp-action="Index">MeetingUser</a>
                     </l1>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="BankAccount" asp-action="Index">BankAccount</a>
+                    </l1>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="MoneyTransfer" asp-action="Index">MoneyTransfer</a>
                     </l1>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Payment" asp-action="Index">Payment</a>
                     </l1>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Questionnaire" asp-action="Index">Questionnaire</a>
                     </l1>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="QuestionnaireRelation" asp-action="Index">QuestionnaireRelation</a>
                     </l1>
+                    <l1 class="nav-item">
+                        <a class="nav-link text-dark" asp-controller="AnswerOption" asp-action="Index">AnswerOption</a>
+                    </l1>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
                     <l1 class="nav-item">
                         <a class="nav-link text-dark" asp-controller="Requirement" asp-action="Index">Requirement</a>
                     </l1>
@@ -64,9 +73,7 @@
                     </l1>
                 </ul>
             </div>
-            
-            <partial name="_LanguageSelection"/>
-            
+
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
                     <li class="nav-item">
@@ -75,6 +82,13 @@
                     <li class="nav-item">
                         <a class="nav-link text-dark" asp-area="" asp-page="/Privacy">Privacy</a>
                     </li>
+                    
+                    <li>
+                        <div style="height: 100%; width: 2.5px; background: #777; border-radius: 5px;"></div>
+                    </li>
+                    
+                    <partial name="_LanguageSelector"/>
+                    
                 </ul>
                 <partial name="_LoginPartial"/>
             </div>
