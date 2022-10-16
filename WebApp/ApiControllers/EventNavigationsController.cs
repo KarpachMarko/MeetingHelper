@@ -1,124 +1,108 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class EventNavigationsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EventNavigationsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<EventNavigation, App.BLL.DTO.EventNavigation> _mapper;
+
+    public EventNavigationsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new EventNavigationMapper(mapper);
+    }
 
-        public EventNavigationsController(AppDbContext context)
+    // GET: api/EventNavigations
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<EventNavigation>>> GetEventNavigations()
+    {
+        var eventNavigations = await _bll.EventNavigations.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(eventNavigations));
+    }
+
+    // GET: api/EventNavigations/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<EventNavigation>> GetEventNavigation(Guid id)
+    {
+        var eventNavigation = await _bll.EventNavigations.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (eventNavigation == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/EventNavigations
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<EventNavigation>>> GetEventNavigations()
+        return _mapper.Map(eventNavigation)!;
+    }
+
+    // PUT: api/EventNavigations/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutEventNavigation(Guid id, EventNavigation eventNavigation)
+    {
+        if (id != eventNavigation.Id)
         {
-          if (_context.EventNavigations == null)
-          {
-              return NotFound();
-          }
-            return await _context.EventNavigations.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/EventNavigations/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<EventNavigation>> GetEventNavigation(Guid id)
-        {
-          if (_context.EventNavigations == null)
-          {
-              return NotFound();
-          }
-            var eventNavigation = await _context.EventNavigations.FindAsync(id);
+        await _bll.EventNavigations.UpdateAsync(_mapper.Map(eventNavigation)!);
 
-            if (eventNavigation == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await EventNavigationExists(id))
             {
                 return NotFound();
             }
 
-            return eventNavigation;
+            throw;
         }
 
-        // PUT: api/EventNavigations/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEventNavigation(Guid id, EventNavigation eventNavigation)
+        return NoContent();
+    }
+
+    // POST: api/EventNavigations
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<EventNavigation>> PostEventNavigation(EventNavigation eventNavigation)
+    {
+        eventNavigation.Id = Guid.NewGuid();
+        _bll.EventNavigations.Add(_mapper.Map(eventNavigation)!);
+        await _bll.SaveChangesAsync();
+
+        return CreatedAtAction("GetEventNavigation", new { id = eventNavigation.Id }, eventNavigation);
+    }
+
+    // DELETE: api/EventNavigations/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteEventNavigation(Guid id)
+    {
+        var eventNavigation = await _bll.EventNavigations.FirstOrDefaultAsync(id, User.GetUserId());
+        if (eventNavigation == null)
         {
-            if (id != eventNavigation.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(eventNavigation).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventNavigationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return NotFound();
         }
 
-        // POST: api/EventNavigations
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<EventNavigation>> PostEventNavigation(EventNavigation eventNavigation)
-        {
-          if (_context.EventNavigations == null)
-          {
-              return Problem("Entity set 'AppDbContext.EventNavigations'  is null.");
-          }
-            _context.EventNavigations.Add(eventNavigation);
-            await _context.SaveChangesAsync();
+        _bll.EventNavigations.Remove(eventNavigation);
+        await _bll.SaveChangesAsync();
 
-            return CreatedAtAction("GetEventNavigation", new { id = eventNavigation.Id }, eventNavigation);
-        }
+        return NoContent();
+    }
 
-        // DELETE: api/EventNavigations/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEventNavigation(Guid id)
-        {
-            if (_context.EventNavigations == null)
-            {
-                return NotFound();
-            }
-            var eventNavigation = await _context.EventNavigations.FindAsync(id);
-            if (eventNavigation == null)
-            {
-                return NotFound();
-            }
-
-            _context.EventNavigations.Remove(eventNavigation);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EventNavigationExists(Guid id)
-        {
-            return (_context.EventNavigations?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> EventNavigationExists(Guid id)
+    {
+        return _bll.EventNavigations.ExistsAsync(id);
     }
 }

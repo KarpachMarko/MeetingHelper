@@ -1,124 +1,101 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class QuestionnaireRelationsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class QuestionnaireRelationsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<QuestionnaireRelation, App.BLL.DTO.QuestionnaireRelation> _mapper;
+
+    public QuestionnaireRelationsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new QuestionnaireRelatrionMapper(mapper);
+    }
 
-        public QuestionnaireRelationsController(AppDbContext context)
+    // GET: api/QuestionnaireRelations
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<QuestionnaireRelation>>> GetQuestionnaireRelations()
+    {
+        var questionnaireRelations = await _bll.QuestionnaireRelations.GetAllAsync();
+        return Ok(_mapper.Map(questionnaireRelations));
+    }
+
+    // GET: api/QuestionnaireRelations/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<QuestionnaireRelation>> GetQuestionnaireRelation(Guid id)
+    {
+        var questionnaireRelation = await _bll.QuestionnaireRelations.FirstOrDefaultAsync(id);
+
+        if (questionnaireRelation == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/QuestionnaireRelations
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<QuestionnaireRelation>>> GetQuestionnaireRelations()
+        return _mapper.Map(questionnaireRelation)!;
+    }
+
+    // PUT: api/QuestionnaireRelations/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutQuestionnaireRelation(Guid id, QuestionnaireRelation questionnaireRelation)
+    {
+        if (id != questionnaireRelation.Id)
         {
-          if (_context.QuestionnaireRelations == null)
-          {
-              return NotFound();
-          }
-            return await _context.QuestionnaireRelations.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/QuestionnaireRelations/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<QuestionnaireRelation>> GetQuestionnaireRelation(Guid id)
-        {
-          if (_context.QuestionnaireRelations == null)
-          {
-              return NotFound();
-          }
-            var questionnaireRelation = await _context.QuestionnaireRelations.FindAsync(id);
+        await _bll.QuestionnaireRelations.UpdateAsync(_mapper.Map(questionnaireRelation)!);
 
-            if (questionnaireRelation == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await QuestionnaireRelationExists(id))
             {
                 return NotFound();
             }
 
-            return questionnaireRelation;
+            throw;
         }
 
-        // PUT: api/QuestionnaireRelations/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutQuestionnaireRelation(Guid id, QuestionnaireRelation questionnaireRelation)
-        {
-            if (id != questionnaireRelation.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(questionnaireRelation).State = EntityState.Modified;
+    // POST: api/QuestionnaireRelations
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<QuestionnaireRelation>> PostQuestionnaireRelation(QuestionnaireRelation questionnaireRelation)
+    {
+        questionnaireRelation.Id = Guid.NewGuid();
+        _bll.QuestionnaireRelations.Add(_mapper.Map(questionnaireRelation)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!QuestionnaireRelationExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetQuestionnaireRelation", new { id = questionnaireRelation.Id }, questionnaireRelation);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/QuestionnaireRelations/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteQuestionnaireRelation(Guid id)
+    {
+        await _bll.QuestionnaireRelations.RemoveAsync(id);
+        await _bll.SaveChangesAsync();
 
-        // POST: api/QuestionnaireRelations
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<QuestionnaireRelation>> PostQuestionnaireRelation(QuestionnaireRelation questionnaireRelation)
-        {
-          if (_context.QuestionnaireRelations == null)
-          {
-              return Problem("Entity set 'AppDbContext.QuestionnaireRelations'  is null.");
-          }
-            _context.QuestionnaireRelations.Add(questionnaireRelation);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetQuestionnaireRelation", new { id = questionnaireRelation.Id }, questionnaireRelation);
-        }
-
-        // DELETE: api/QuestionnaireRelations/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteQuestionnaireRelation(Guid id)
-        {
-            if (_context.QuestionnaireRelations == null)
-            {
-                return NotFound();
-            }
-            var questionnaireRelation = await _context.QuestionnaireRelations.FindAsync(id);
-            if (questionnaireRelation == null)
-            {
-                return NotFound();
-            }
-
-            _context.QuestionnaireRelations.Remove(questionnaireRelation);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool QuestionnaireRelationExists(Guid id)
-        {
-            return (_context.QuestionnaireRelations?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> QuestionnaireRelationExists(Guid id)
+    {
+        return _bll.QuestionnaireRelations.ExistsAsync(id);
     }
 }

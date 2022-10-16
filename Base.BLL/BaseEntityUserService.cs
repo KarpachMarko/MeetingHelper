@@ -92,8 +92,8 @@ public class BaseEntityUserService<TBllEntity, TDalEntity, TBllUser, TDalUser, T
         return await Repository.ExistsAsync(id);
     }
 
-    public async Task<TBllEntity> RemoveAsync(TKey userId, TKey id)
+    public async Task<TBllEntity> RemoveAsync(TKey id, TKey userId)
     {
-        return Mapper.Map(await Repository.RemoveAsync(userId, id))!;
+        return Mapper.Map(await Repository.RemoveAsync(id, userId))!;
     }
 }

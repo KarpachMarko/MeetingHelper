@@ -1,124 +1,103 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class MeetingUsersController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MeetingUsersController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<MeetingUser, App.BLL.DTO.MeetingUser> _mapper;
+
+    public MeetingUsersController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new MeetingUserMapper(mapper);
+    }
 
-        public MeetingUsersController(AppDbContext context)
+    // GET: api/MeetingUsers
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<MeetingUser>>> GetMeetingUsers()
+    {
+        var meetingUsers = await _bll.MeetingUsers.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(meetingUsers));
+    }
+
+    // GET: api/MeetingUsers/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<MeetingUser>> GetMeetingUser(Guid id)
+    {
+        var meetingUser = await _bll.MeetingUsers.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (meetingUser == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/MeetingUsers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<MeetingUser>>> GetMeetingUsers()
+        return _mapper.Map(meetingUser)!;
+    }
+
+    // PUT: api/MeetingUsers/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutMeetingUser(Guid id, MeetingUser meetingUser)
+    {
+        if (id != meetingUser.Id)
         {
-          if (_context.MeetingUsers == null)
-          {
-              return NotFound();
-          }
-            return await _context.MeetingUsers.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/MeetingUsers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<MeetingUser>> GetMeetingUser(Guid id)
-        {
-          if (_context.MeetingUsers == null)
-          {
-              return NotFound();
-          }
-            var meetingUser = await _context.MeetingUsers.FindAsync(id);
+        await _bll.MeetingUsers.UpdateAsync(_mapper.Map(meetingUser)!, User.GetUserId());
 
-            if (meetingUser == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await MeetingUserExists(id))
             {
                 return NotFound();
             }
 
-            return meetingUser;
+            throw;
         }
 
-        // PUT: api/MeetingUsers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMeetingUser(Guid id, MeetingUser meetingUser)
-        {
-            if (id != meetingUser.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(meetingUser).State = EntityState.Modified;
+    // POST: api/MeetingUsers
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<MeetingUser>> PostMeetingUser(MeetingUser meetingUser)
+    {
+        meetingUser.Id = Guid.NewGuid();
+        meetingUser.UserId = User.GetUserId();
+        _bll.MeetingUsers.Add(_mapper.Map(meetingUser)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MeetingUserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetMeetingUser", new { id = meetingUser.Id }, meetingUser);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/MeetingUsers/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteMeetingUser(Guid id)
+    {
+        await _bll.MeetingUsers.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/MeetingUsers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<MeetingUser>> PostMeetingUser(MeetingUser meetingUser)
-        {
-          if (_context.MeetingUsers == null)
-          {
-              return Problem("Entity set 'AppDbContext.MeetingUsers'  is null.");
-          }
-            _context.MeetingUsers.Add(meetingUser);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetMeetingUser", new { id = meetingUser.Id }, meetingUser);
-        }
-
-        // DELETE: api/MeetingUsers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMeetingUser(Guid id)
-        {
-            if (_context.MeetingUsers == null)
-            {
-                return NotFound();
-            }
-            var meetingUser = await _context.MeetingUsers.FindAsync(id);
-            if (meetingUser == null)
-            {
-                return NotFound();
-            }
-
-            _context.MeetingUsers.Remove(meetingUser);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MeetingUserExists(Guid id)
-        {
-            return (_context.MeetingUsers?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> MeetingUserExists(Guid id)
+    {
+        return _bll.MeetingUsers.ExistsAsync(id);
     }
 }

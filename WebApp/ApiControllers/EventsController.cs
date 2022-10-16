@@ -1,124 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class EventsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EventsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<Event, App.BLL.DTO.Event> _mapper;
+
+    public EventsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new EventMapper(mapper);
+    }
 
-        public EventsController(AppDbContext context)
+    // GET: api/Events
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+    {
+        var events = await _bll.Events.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(events));
+    }
+
+    // GET: api/Events/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Event>> GetEvent(Guid id)
+    {
+        var getEvent = await _bll.Events.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (getEvent == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Events
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        return _mapper.Map(getEvent)!;
+    }
+
+    // PUT: api/Events/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutEvent(Guid id, Event putEvent)
+    {
+        if (id != putEvent.Id)
         {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            return await _context.Events.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/Events/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEvent(Guid id)
-        {
-          if (_context.Events == null)
-          {
-              return NotFound();
-          }
-            var getEvent = await _context.Events.FindAsync(id);
+        await _bll.Events.UpdateAsync(_mapper.Map(putEvent)!);
 
-            if (getEvent == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await EventExists(id))
             {
                 return NotFound();
             }
 
-            return getEvent;
+            throw;
         }
 
-        // PUT: api/Events/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(Guid id, Event putEvent)
-        {
-            if (id != putEvent.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(putEvent).State = EntityState.Modified;
+    // POST: api/Events
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Event>> PostEvent(Event postEvent)
+    {
+        postEvent.Id = Guid.NewGuid();
+        _bll.Events.Add(_mapper.Map(postEvent)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!EventExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetEvent", new { id = postEvent.Id }, postEvent);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/Events/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteEvent(Guid id)
+    {
+        await _bll.Events.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/Events
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event postEvent)
-        {
-          if (_context.Events == null)
-          {
-              return Problem("Entity set 'AppDbContext.Events'  is null.");
-          }
-            _context.Events.Add(postEvent);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetEvent", new { id = postEvent.Id }, postEvent);
-        }
-
-        // DELETE: api/Events/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
-        {
-            if (_context.Events == null)
-            {
-                return NotFound();
-            }
-            var deleteEvent = await _context.Events.FindAsync(id);
-            if (deleteEvent == null)
-            {
-                return NotFound();
-            }
-
-            _context.Events.Remove(deleteEvent);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool EventExists(Guid id)
-        {
-            return (_context.Events?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> EventExists(Guid id)
+    {
+        return _bll.Events.ExistsAsync(id);
     }
 }

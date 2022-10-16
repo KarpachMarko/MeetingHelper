@@ -1,124 +1,103 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class BankAccountsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class BankAccountsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<BankAccount, App.BLL.DTO.BankAccount> _mapper;
+
+    public BankAccountsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new BankAccountMapper(mapper);
+    }
 
-        public BankAccountsController(AppDbContext context)
+    // GET: api/BankAccounts
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
+    {
+        var bankAccounts = await _bll.BankAccounts.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(bankAccounts));
+    }
+
+    // GET: api/BankAccounts/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<BankAccount>> GetBankAccount(Guid id)
+    {
+        var bankAccount = await _bll.BankAccounts.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (bankAccount == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/BankAccounts
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<BankAccount>>> GetBankAccounts()
+        return _mapper.Map(bankAccount)!;
+    }
+
+    // PUT: api/BankAccounts/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutBankAccount(Guid id, BankAccount bankAccount)
+    {
+        if (id != bankAccount.Id)
         {
-          if (_context.BankAccounts == null)
-          {
-              return NotFound();
-          }
-            return await _context.BankAccounts.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/BankAccounts/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<BankAccount>> GetBankAccount(Guid id)
-        {
-          if (_context.BankAccounts == null)
-          {
-              return NotFound();
-          }
-            var bankAccount = await _context.BankAccounts.FindAsync(id);
+        await _bll.BankAccounts.UpdateAsync(_mapper.Map(bankAccount)!, User.GetUserId());
 
-            if (bankAccount == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await BankAccountExists(id))
             {
                 return NotFound();
             }
 
-            return bankAccount;
+            throw;
         }
 
-        // PUT: api/BankAccounts/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutBankAccount(Guid id, BankAccount bankAccount)
-        {
-            if (id != bankAccount.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(bankAccount).State = EntityState.Modified;
+    // POST: api/BankAccounts
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
+    {
+        bankAccount.Id = Guid.NewGuid();
+        bankAccount.UserId = User.GetUserId();
+        _bll.BankAccounts.Add(_mapper.Map(bankAccount)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!BankAccountExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/BankAccounts/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteBankAccount(Guid id)
+    {
+        await _bll.BankAccounts.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/BankAccounts
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<BankAccount>> PostBankAccount(BankAccount bankAccount)
-        {
-          if (_context.BankAccounts == null)
-          {
-              return Problem("Entity set 'AppDbContext.BankAccounts'  is null.");
-          }
-            _context.BankAccounts.Add(bankAccount);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetBankAccount", new { id = bankAccount.Id }, bankAccount);
-        }
-
-        // DELETE: api/BankAccounts/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteBankAccount(Guid id)
-        {
-            if (_context.BankAccounts == null)
-            {
-                return NotFound();
-            }
-            var bankAccount = await _context.BankAccounts.FindAsync(id);
-            if (bankAccount == null)
-            {
-                return NotFound();
-            }
-
-            _context.BankAccounts.Remove(bankAccount);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool BankAccountExists(Guid id)
-        {
-            return (_context.BankAccounts?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> BankAccountExists(Guid id)
+    {
+        return _bll.BankAccounts.ExistsAsync(id);
     }
 }

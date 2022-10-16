@@ -1,124 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class AnswerOptionsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AnswerOptionsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<AnswerOption, App.BLL.DTO.AnswerOption> _mapper;
+
+    public AnswerOptionsController(IAppBll bll,
+        IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new AnswerOptionMapper(mapper);
+    }
 
-        public AnswerOptionsController(AppDbContext context)
+    // GET: api/AnswerOptions
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<AnswerOption>>> GetAnswerOptions()
+    {
+        var answerOptions = await _bll.AnswerOptions.GetAllAsync();
+        return Ok(_mapper.Map(answerOptions));
+    }
+
+    // GET: api/AnswerOptions/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<AnswerOption>> GetAnswerOption(Guid id)
+    {
+        var answerOption = await _bll.AnswerOptions.FirstOrDefaultAsync(id);
+
+        if (answerOption == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/AnswerOptions
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<AnswerOption>>> GetAnswerOptions()
+        return _mapper.Map(answerOption)!;
+    }
+
+    // PUT: api/AnswerOptions/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutAnswerOption(Guid id, AnswerOption answerOption)
+    {
+        if (id != answerOption.Id)
         {
-          if (_context.AnswerOptions == null)
-          {
-              return NotFound();
-          }
-            return await _context.AnswerOptions.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/AnswerOptions/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<AnswerOption>> GetAnswerOption(Guid id)
-        {
-          if (_context.AnswerOptions == null)
-          {
-              return NotFound();
-          }
-            var answerOption = await _context.AnswerOptions.FindAsync(id);
+        await _bll.AnswerOptions.UpdateAsync(_mapper.Map(answerOption)!);
 
-            if (answerOption == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await AnswerOptionExists(id))
             {
                 return NotFound();
             }
 
-            return answerOption;
+            throw;
         }
 
-        // PUT: api/AnswerOptions/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAnswerOption(Guid id, AnswerOption answerOption)
-        {
-            if (id != answerOption.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(answerOption).State = EntityState.Modified;
+    // POST: api/AnswerOptions
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<AnswerOption>> PostAnswerOption(AnswerOption answerOption)
+    {
+        answerOption.Id = Guid.NewGuid();
+        _bll.AnswerOptions.Add(_mapper.Map(answerOption)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AnswerOptionExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetAnswerOption", new { id = answerOption.Id }, answerOption);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/AnswerOptions/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteAnswerOption(Guid id)
+    {
+        await _bll.AnswerOptions.RemoveAsync(id);
+        await _bll.SaveChangesAsync();
 
-        // POST: api/AnswerOptions
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<AnswerOption>> PostAnswerOption(AnswerOption answerOption)
-        {
-          if (_context.AnswerOptions == null)
-          {
-              return Problem("Entity set 'AppDbContext.AnswerOptions'  is null.");
-          }
-            _context.AnswerOptions.Add(answerOption);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetAnswerOption", new { id = answerOption.Id }, answerOption);
-        }
-
-        // DELETE: api/AnswerOptions/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAnswerOption(Guid id)
-        {
-            if (_context.AnswerOptions == null)
-            {
-                return NotFound();
-            }
-            var answerOption = await _context.AnswerOptions.FindAsync(id);
-            if (answerOption == null)
-            {
-                return NotFound();
-            }
-
-            _context.AnswerOptions.Remove(answerOption);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool AnswerOptionExists(Guid id)
-        {
-            return (_context.AnswerOptions?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> AnswerOptionExists(Guid id)
+    {
+        return _bll.AnswerOptions.ExistsAsync(id);
     }
 }

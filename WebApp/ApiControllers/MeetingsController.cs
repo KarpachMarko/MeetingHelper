@@ -1,124 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class MeetingsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class MeetingsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<Meeting, App.BLL.DTO.Meeting> _mapper;
+
+    public MeetingsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new MeetingMapper(mapper);
+    }
 
-        public MeetingsController(AppDbContext context)
+    // GET: api/Meetings
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Meeting>>> GetMeetings()
+    {
+        var meetings = await _bll.Meetings.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(meetings));
+    }
+
+    // GET: api/Meetings/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Meeting>> GetMeeting(Guid id)
+    {
+        var meeting = await _bll.Meetings.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (meeting == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Meetings
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Meeting>>> GetMeetings()
+        return _mapper.Map(meeting)!;
+    }
+
+    // PUT: api/Meetings/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutMeeting(Guid id, Meeting meeting)
+    {
+        if (id != meeting.Id)
         {
-          if (_context.Meetings == null)
-          {
-              return NotFound();
-          }
-            return await _context.Meetings.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/Meetings/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Meeting>> GetMeeting(Guid id)
-        {
-          if (_context.Meetings == null)
-          {
-              return NotFound();
-          }
-            var meeting = await _context.Meetings.FindAsync(id);
+        await _bll.Meetings.UpdateAsync(_mapper.Map(meeting)!);
 
-            if (meeting == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await MeetingExists(id))
             {
                 return NotFound();
             }
 
-            return meeting;
+            throw;
         }
 
-        // PUT: api/Meetings/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutMeeting(Guid id, Meeting meeting)
-        {
-            if (id != meeting.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(meeting).State = EntityState.Modified;
+    // POST: api/Meetings
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Meeting>> PostMeeting(Meeting meeting)
+    {
+        meeting.Id = Guid.NewGuid();
+        _bll.Meetings.Add(_mapper.Map(meeting)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!MeetingExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetMeeting", new { id = meeting.Id }, meeting);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/Meetings/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteMeeting(Guid id)
+    {
+        await _bll.Meetings.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/Meetings
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Meeting>> PostMeeting(Meeting meeting)
-        {
-          if (_context.Meetings == null)
-          {
-              return Problem("Entity set 'AppDbContext.Meetings'  is null.");
-          }
-            _context.Meetings.Add(meeting);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetMeeting", new { id = meeting.Id }, meeting);
-        }
-
-        // DELETE: api/Meetings/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMeeting(Guid id)
-        {
-            if (_context.Meetings == null)
-            {
-                return NotFound();
-            }
-            var meeting = await _context.Meetings.FindAsync(id);
-            if (meeting == null)
-            {
-                return NotFound();
-            }
-
-            _context.Meetings.Remove(meeting);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool MeetingExists(Guid id)
-        {
-            return (_context.Meetings?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> MeetingExists(Guid id)
+    {
+        return _bll.Meetings.ExistsAsync(id);
     }
 }

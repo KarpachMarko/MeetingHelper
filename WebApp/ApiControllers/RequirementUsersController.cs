@@ -1,124 +1,103 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RequirementUsersController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RequirementUsersController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<RequirementUser, App.BLL.DTO.RequirementUser> _mapper;
+
+    public RequirementUsersController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new RequirementUserMapper(mapper);
+    }
 
-        public RequirementUsersController(AppDbContext context)
+    // GET: api/RequirementUsers
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<RequirementUser>>> GetRequirementUsers()
+    {
+        var requirementUsers = await _bll.RequirementUsers.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(requirementUsers));
+    }
+
+    // GET: api/RequirementUsers/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<RequirementUser>> GetRequirementUser(Guid id)
+    {
+        var requirementUser = await _bll.RequirementUsers.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (requirementUser == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/RequirementUsers
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<RequirementUser>>> GetRequirementUsers()
+        return _mapper.Map(requirementUser)!;
+    }
+
+    // PUT: api/RequirementUsers/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutRequirementUser(Guid id, RequirementUser requirementUser)
+    {
+        if (id != requirementUser.Id)
         {
-          if (_context.RequirementUsers == null)
-          {
-              return NotFound();
-          }
-            return await _context.RequirementUsers.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/RequirementUsers/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<RequirementUser>> GetRequirementUser(Guid id)
-        {
-          if (_context.RequirementUsers == null)
-          {
-              return NotFound();
-          }
-            var requirementUser = await _context.RequirementUsers.FindAsync(id);
+        await _bll.RequirementUsers.UpdateAsync(_mapper.Map(requirementUser)!, User.GetUserId());
 
-            if (requirementUser == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await RequirementUserExists(id))
             {
                 return NotFound();
             }
 
-            return requirementUser;
+            throw;
         }
 
-        // PUT: api/RequirementUsers/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRequirementUser(Guid id, RequirementUser requirementUser)
-        {
-            if (id != requirementUser.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(requirementUser).State = EntityState.Modified;
+    // POST: api/RequirementUsers
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<RequirementUser>> PostRequirementUser(RequirementUser requirementUser)
+    {
+        requirementUser.Id = Guid.NewGuid();
+        requirementUser.UserId = User.GetUserId();
+        _bll.RequirementUsers.Add(_mapper.Map(requirementUser)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RequirementUserExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetRequirementUser", new { id = requirementUser.Id }, requirementUser);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/RequirementUsers/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRequirementUser(Guid id)
+    {
+        await _bll.RequirementUsers.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/RequirementUsers
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<RequirementUser>> PostRequirementUser(RequirementUser requirementUser)
-        {
-          if (_context.RequirementUsers == null)
-          {
-              return Problem("Entity set 'AppDbContext.RequirementUsers'  is null.");
-          }
-            _context.RequirementUsers.Add(requirementUser);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetRequirementUser", new { id = requirementUser.Id }, requirementUser);
-        }
-
-        // DELETE: api/RequirementUsers/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRequirementUser(Guid id)
-        {
-            if (_context.RequirementUsers == null)
-            {
-                return NotFound();
-            }
-            var requirementUser = await _context.RequirementUsers.FindAsync(id);
-            if (requirementUser == null)
-            {
-                return NotFound();
-            }
-
-            _context.RequirementUsers.Remove(requirementUser);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool RequirementUserExists(Guid id)
-        {
-            return (_context.RequirementUsers?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> RequirementUserExists(Guid id)
+    {
+        return _bll.RequirementUsers.ExistsAsync(id);
     }
 }

@@ -134,7 +134,7 @@ public class BaseEntityUserDependentRepository<TDalEntity, TDomainEntity, TKey, 
         return await RepoDbSet.AnyAsync(entity => entity.Id.Equals(id));
     }
 
-    public virtual async Task<TDalEntity> RemoveAsync(TKey userId, TKey id)
+    public virtual async Task<TDalEntity> RemoveAsync(TKey id, TKey userId)
     {
         var entity = await FirstOrDefaultAsync(id, userId);
         if (entity == null)

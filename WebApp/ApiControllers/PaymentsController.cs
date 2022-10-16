@@ -1,124 +1,103 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class PaymentsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class PaymentsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<Payment, App.BLL.DTO.Payment> _mapper;
+
+    public PaymentsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new PaymentMapper(mapper);
+    }
 
-        public PaymentsController(AppDbContext context)
+    // GET: api/Payments
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
+    {
+        var payments = await _bll.Payments.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(payments));
+    }
+
+    // GET: api/Payments/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Payment>> GetPayment(Guid id)
+    {
+        var payment = await _bll.Payments.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (payment == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Payments
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
+        return _mapper.Map(payment)!;
+    }
+
+    // PUT: api/Payments/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutPayment(Guid id, Payment payment)
+    {
+        if (id != payment.Id)
         {
-          if (_context.Payments == null)
-          {
-              return NotFound();
-          }
-            return await _context.Payments.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/Payments/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Payment>> GetPayment(Guid id)
-        {
-          if (_context.Payments == null)
-          {
-              return NotFound();
-          }
-            var payment = await _context.Payments.FindAsync(id);
+        await _bll.Payments.UpdateAsync(_mapper.Map(payment)!, User.GetUserId());
 
-            if (payment == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await PaymentExists(id))
             {
                 return NotFound();
             }
 
-            return payment;
+            throw;
         }
 
-        // PUT: api/Payments/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutPayment(Guid id, Payment payment)
-        {
-            if (id != payment.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(payment).State = EntityState.Modified;
+    // POST: api/Payments
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Payment>> PostPayment(Payment payment)
+    {
+        payment.Id = Guid.NewGuid();
+        payment.UserId = User.GetUserId();
+        _bll.Payments.Add(_mapper.Map(payment)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PaymentExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/Payments/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeletePayment(Guid id)
+    {
+        await _bll.Payments.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/Payments
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Payment>> PostPayment(Payment payment)
-        {
-          if (_context.Payments == null)
-          {
-              return Problem("Entity set 'AppDbContext.Payments'  is null.");
-          }
-            _context.Payments.Add(payment);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetPayment", new { id = payment.Id }, payment);
-        }
-
-        // DELETE: api/Payments/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeletePayment(Guid id)
-        {
-            if (_context.Payments == null)
-            {
-                return NotFound();
-            }
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            _context.Payments.Remove(payment);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool PaymentExists(Guid id)
-        {
-            return (_context.Payments?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> PaymentExists(Guid id)
+    {
+        return _bll.Payments.ExistsAsync(id);
     }
 }

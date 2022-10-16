@@ -1,124 +1,102 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
+using App.Public.DTO.v1;
+using AutoMapper;
+using Base.Contracts;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.ApiControllers
+namespace WebApp.ApiControllers;
+
+[Route("api/[controller]")]
+[ApiController]
+public class RequirementsController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class RequirementsController : ControllerBase
+    private readonly IAppBll _bll;
+    private readonly IMapper<Requirement, App.BLL.DTO.Requirement> _mapper;
+
+    public RequirementsController(IAppBll bll, IMapper mapper)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+        _mapper = new RequirementMapper(mapper);
+    }
 
-        public RequirementsController(AppDbContext context)
+    // GET: api/Requirements
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Requirement>>> GetRequirements()
+    {
+        var requirements = await _bll.Requirements.GetAllAsync(User.GetUserId());
+        return Ok(_mapper.Map(requirements));
+    }
+
+    // GET: api/Requirements/5
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Requirement>> GetRequirement(Guid id)
+    {
+        var requirement = await _bll.Requirements.FirstOrDefaultAsync(id, User.GetUserId());
+
+        if (requirement == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: api/Requirements
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Requirement>>> GetRequirements()
+        return _mapper.Map(requirement)!;
+    }
+
+    // PUT: api/Requirements/5
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPut("{id}")]
+    public async Task<IActionResult> PutRequirement(Guid id, Requirement requirement)
+    {
+        if (id != requirement.Id)
         {
-          if (_context.Requirements == null)
-          {
-              return NotFound();
-          }
-            return await _context.Requirements.ToListAsync();
+            return BadRequest();
         }
 
-        // GET: api/Requirements/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Requirement>> GetRequirement(Guid id)
-        {
-          if (_context.Requirements == null)
-          {
-              return NotFound();
-          }
-            var requirement = await _context.Requirements.FindAsync(id);
+        await _bll.Requirements.UpdateAsync(_mapper.Map(requirement)!);
 
-            if (requirement == null)
+        try
+        {
+            await _bll.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!await RequirementExists(id))
             {
                 return NotFound();
             }
 
-            return requirement;
+            throw;
         }
 
-        // PUT: api/Requirements/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutRequirement(Guid id, Requirement requirement)
-        {
-            if (id != requirement.Id)
-            {
-                return BadRequest();
-            }
+        return NoContent();
+    }
 
-            _context.Entry(requirement).State = EntityState.Modified;
+    // POST: api/Requirements
+    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+    [HttpPost]
+    public async Task<ActionResult<Requirement>> PostRequirement(Requirement requirement)
+    {
+        requirement.Id = Guid.NewGuid();
+        _bll.Requirements.Add(_mapper.Map(requirement)!);
+        await _bll.SaveChangesAsync();
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!RequirementExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+        return CreatedAtAction("GetRequirement", new { id = requirement.Id }, requirement);
+    }
 
-            return NoContent();
-        }
+    // DELETE: api/Requirements/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteRequirement(Guid id)
+    {
+        await _bll.Requirements.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
 
-        // POST: api/Requirements
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Requirement>> PostRequirement(Requirement requirement)
-        {
-          if (_context.Requirements == null)
-          {
-              return Problem("Entity set 'AppDbContext.Requirements'  is null.");
-          }
-            _context.Requirements.Add(requirement);
-            await _context.SaveChangesAsync();
+        return NoContent();
+    }
 
-            return CreatedAtAction("GetRequirement", new { id = requirement.Id }, requirement);
-        }
-
-        // DELETE: api/Requirements/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteRequirement(Guid id)
-        {
-            if (_context.Requirements == null)
-            {
-                return NotFound();
-            }
-            var requirement = await _context.Requirements.FindAsync(id);
-            if (requirement == null)
-            {
-                return NotFound();
-            }
-
-            _context.Requirements.Remove(requirement);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool RequirementExists(Guid id)
-        {
-            return (_context.Requirements?.Any(e => e.Id == id)).GetValueOrDefault();
-        }
+    private Task<bool> RequirementExists(Guid id)
+    {
+        return _bll.Requirements.ExistsAsync(id);
     }
 }
