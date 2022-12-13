@@ -25,6 +25,16 @@ builder.Services.AddAutoMapper(
     typeof(App.DAL.EF.AutoMapperConfig)
 );
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsAllowAll",
+        policyBuilder =>
+        {
+            policyBuilder.AllowAnyOrigin();
+            policyBuilder.AllowAnyHeader();
+            policyBuilder.AllowAnyMethod();
+        });
+});
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -77,6 +87,8 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+app.UseCors("CorsAllowAll");
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
