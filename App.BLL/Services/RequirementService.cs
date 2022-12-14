@@ -21,7 +21,7 @@ public class RequirementService :
         return Mapper.Map(await Repository.GetAllInMeeting(meetingId));
     }
 
-    public async Task<Dictionary<Guid, double>> GetPersonsExpenseInMeeting(Guid meetingId, IUserService userService, IRequirementOptionService optionService)
+    public async Task<Dictionary<Guid, double>> GetPersonsExpenseInMeeting(Guid meetingId, IUserService userService, IPaymentService paymentService)
     {
         var result = new Dictionary<Guid, double>();
         var requirements = await GetAllInMeeting(meetingId);
@@ -40,14 +40,9 @@ public class RequirementService :
                 var requirementUser = requirementUsers.First(reqUser =>
                     reqUser.UserId.Equals(userId) && reqUser.RequirementId.Equals(requirement.Id));
 
-                var option = await optionService.GetSelected(requirement.Id);
-                if (option == null)
-                {
-                    continue;
-                }
-                var price = option.Price;
+                var payed = (await paymentService.GetRequirementPayments(requirement.Id)).Sum(payment => payment.Amount);
 
-                var expenseAmount = price / requirementUsers.Count * requirementUser.Proportion * -1;
+                var expenseAmount = payed / requirementUsers.Count * requirementUser.Proportion * -1;
 
                 result.AddMerge(userId, expenseAmount, (value, otherValue) => value + otherValue);
             }
