@@ -12,5 +12,5 @@ public interface IRequirementOptionRepository : IEntityRepository<RequirementOpt
 public interface IRequirementOptionRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<TEntity?> GetSelected(Guid requirementId);
 }

@@ -8,7 +8,7 @@ namespace App.Public.DTO.v1;
 
 public class EventUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
-    public EventStatus Status { get; set; }
+    public EEventStatus Status { get; set; }
     
     public Guid EventId { get; set; }
     [Required]

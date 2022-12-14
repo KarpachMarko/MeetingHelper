@@ -41,19 +41,32 @@ public class BaseEntityUserRepository<TDalEntity, TDomainEntity, TKey, TDalUser,
     protected virtual IQueryable<TDomainEntity> CreateQuery(TKey userId, bool noTracking = true)
     {
         var query = RepoDbSet
-            .AsQueryable()
-            .Include(e => e.User)
-            .Where(e => e.UserId.Equals(userId));
+            .AsQueryable();
         if (noTracking)
         {
             query = query
                 .AsNoTracking();
         }
-        else
+
+        query = query
+            .Include(e => e.User)
+            .Where(e => e.UserId.Equals(userId));
+
+        return query;
+    }
+    
+    protected virtual IQueryable<TDomainEntity> CreateQueryUnsafe(bool noTracking = true)
+    {
+        var query = RepoDbSet
+            .AsQueryable();
+        if (noTracking)
         {
             query = query
-                .Where(e => e.UserId.Equals(userId));
+                .AsNoTracking();
         }
+    
+        query = query
+            .Include(e => e.User);
 
         return query;
     }

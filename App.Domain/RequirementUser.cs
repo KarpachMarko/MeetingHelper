@@ -8,7 +8,7 @@ namespace App.Domain;
 
 public class RequirementUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
-    public RequirementRole Role { get; set; }
+    public ERequirementRole Role { get; set; }
     public double Proportion { get; set; }
     
     public Guid RequirementId { get; set; }

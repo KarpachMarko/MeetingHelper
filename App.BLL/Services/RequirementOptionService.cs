@@ -13,4 +13,9 @@ public class RequirementOptionService :
     public RequirementOptionService(IRequirementOptionRepository repository, IMapper<RequirementOption, DAL.DTO.RequirementOption> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<RequirementOption?> GetSelected(Guid requirementId)
+    {
+        return Mapper.Map(await Repository.GetSelected(requirementId));
+    }
 }

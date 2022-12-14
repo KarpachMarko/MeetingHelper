@@ -1,6 +1,6 @@
-﻿using AutoMapper;
-using App.BLL.DTO;
+﻿using App.BLL.DTO;
 using App.BLL.DTO.Identity;
+using AutoMapper;
 
 namespace App.BLL;
 

@@ -9,7 +9,8 @@ namespace App.BLL.Services;
 public class MeetingService : BaseEntityUserDependentService<Meeting, DAL.DTO.Meeting, IMeetingRepository>,
     IMeetingService
 {
-    public MeetingService(IMeetingRepository repository, IMapper<Meeting, DAL.DTO.Meeting> mapper) : base(repository, mapper)
+    public MeetingService(IMeetingRepository repository, IMapper<Meeting, DAL.DTO.Meeting> mapper) : base(repository,
+        mapper)
     {
     }
 }

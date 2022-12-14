@@ -1,7 +1,9 @@
 ﻿using App.Contracts.DAL.Repositories;
 using App.DAL.DTO;
+using App.Domain.Enums;
 using Base.Contracts;
 using Base.DAL.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.Repositories;
 
@@ -12,5 +14,12 @@ public class RequirementOptionRepository :
     public RequirementOptionRepository(AppDbContext dbContext,
         IMapper<RequirementOption, Domain.RequirementOption> mapper) : base(dbContext, mapper)
     {
+    }
+
+    public async Task<RequirementOption?> GetSelected(Guid requirementId)
+    {
+        return Mapper.Map(await CreateQuery()
+            .FirstAsync(option => option.RequirementId.Equals(requirementId)
+                                  && option.Status.Equals(EOptionStatus.Selected)));
     }
 }

@@ -8,7 +8,7 @@ namespace App.Domain;
 
 public class EventUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
-    public EventStatus Status { get; set; }
+    public EEventStatus Status { get; set; }
     
     public Guid EventId { get; set; }
     public Event? Event { get; set; }

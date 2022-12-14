@@ -14,4 +14,9 @@ public class PaymentService :
     public PaymentService(IPaymentRepository repository, IMapper<Payment, DAL.DTO.Payment> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<IEnumerable<Payment>> GetRequirementPayments(Guid requirementId)
+    {
+        return Mapper.Map(await Repository.GetRequirementPayments(requirementId));
+    }
 }

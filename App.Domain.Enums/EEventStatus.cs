@@ -1,8 +1,8 @@
 ﻿namespace App.Domain.Enums;
 
-public enum EventStatus
+public enum EEventStatus
 {
-    MayBeGoind = 0,
+    MayBeGoing = 0,
     Going = 1,
     Responsible = 2
 }

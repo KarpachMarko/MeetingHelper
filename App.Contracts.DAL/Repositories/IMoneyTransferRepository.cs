@@ -12,5 +12,5 @@ public interface IMoneyTransferRepository : IEntityRepository<MoneyTransfer>, IM
 public interface IMoneyTransferRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetMeetingMoneyTransfers(Guid meetingId);
 }

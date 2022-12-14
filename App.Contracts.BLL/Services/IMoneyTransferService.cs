@@ -6,5 +6,5 @@ namespace App.Contracts.BLL.Services;
 
 public interface IMoneyTransferService : IEntityService<MoneyTransfer>, IMoneyTransferRepositoryCustom<MoneyTransfer>
 {
-    
+    public IEnumerable<MoneyTransfer> GetCloseDebtsTransfers(Dictionary<Guid, double> debts);
 }

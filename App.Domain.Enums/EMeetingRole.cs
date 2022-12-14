@@ -1,6 +1,6 @@
 ﻿namespace App.Domain.Enums;
 
-public enum MeetingRole
+public enum EMeetingRole
 {
     Creater = 1,
     Manager = 2,

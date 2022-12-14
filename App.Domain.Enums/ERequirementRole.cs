@@ -1,6 +1,6 @@
 ﻿namespace App.Domain.Enums;
 
-public enum RequirementRole
+public enum ERequirementRole
 {
     Responsible = 2,
     User = 1

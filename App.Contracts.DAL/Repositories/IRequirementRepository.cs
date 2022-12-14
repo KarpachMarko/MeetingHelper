@@ -12,5 +12,5 @@ public interface IRequirementRepository : IEntityUserDependentRepository<Require
 public interface IRequirementRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetAllInMeeting(Guid meetingId);
 }

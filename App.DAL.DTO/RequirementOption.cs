@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using App.Domain.Enums;
 using Base.Domain;
 using Base.Resources.EntityCommon;
 
@@ -18,6 +19,8 @@ public class RequirementOption : DomainEntityId
     public string Link { get; set; } = default!;
 
     public float Price { get; set; }
+    
+    public EOptionStatus Status { get; set; }
     
     public Guid RequirementId { get; set; }
     [Required]
