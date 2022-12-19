@@ -1,4 +1,4 @@
-@model App.Domain.QuestionnaireRelation
+@model App.BLL.DTO.QuestionnaireRelation
 
 @{
     ViewData["Title"] = "Delete";
@@ -21,19 +21,19 @@
             @Html.DisplayNameFor(model => model.Meeting)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Meeting!.Description)
+            @Html.DisplayFor(model => model.Meeting!.Title)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Event)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Event!.Description)
+            @Html.DisplayFor(model => model.Event!.Title)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Requirement)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Requirement!.Description)
+            @Html.DisplayFor(model => model.Requirement!.Title)
         </dd>
     </dl>
     

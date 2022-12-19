@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.EventNavigation>
+@model IEnumerable<App.BLL.DTO.EventNavigation>
 
 @{
     ViewData["Title"] = "Index";
@@ -25,10 +25,10 @@
 @foreach (var item in Model!) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.PreviousEvent!.Description)
+                @Html.DisplayFor(modelItem => item.PreviousEvent!.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.NextEvent!.Description)
+                @Html.DisplayFor(modelItem => item.NextEvent!.Title)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

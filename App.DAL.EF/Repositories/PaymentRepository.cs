@@ -15,6 +15,18 @@ public class PaymentRepository :
     {
     }
 
+    protected override IQueryable<Domain.Payment> CreateQuery(Guid userId, bool noTracking = true)
+    {
+        return base.CreateQuery(userId, noTracking)
+        .Include(payment => payment.Requirement);
+    }
+
+    protected override IQueryable<Domain.Payment> CreateQueryUnsafe(bool noTracking = true)
+    {
+        return base.CreateQueryUnsafe(noTracking)
+        .Include(payment => payment.Requirement);
+    }
+
     public async Task<IEnumerable<Payment>> GetRequirementPayments(Guid requirementId)
     {
         var payments = await CreateQueryUnsafe()

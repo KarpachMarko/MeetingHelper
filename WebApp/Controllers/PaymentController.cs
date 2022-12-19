@@ -1,184 +1,160 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using App.BLL.DTO;
+using App.BLL.DTO.Identity;
+using App.Contracts.BLL;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class PaymentController : Controller
 {
-    public class PaymentController : Controller
+    private readonly IAppBll _bll;
+
+    public PaymentController(IAppBll bll)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+    }
 
-        public PaymentController(AppDbContext context)
+    // GET: Admin/Payment
+    public async Task<IActionResult> Index()
+    {
+        var payments = await _bll.Payments.GetAllAsync(User.GetUserId());
+        return View(payments);
+    }
+
+    // GET: Admin/Payment/Details/5
+    public async Task<IActionResult> Details(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: Admin/Payment
-        public async Task<IActionResult> Index()
+        var payment = await _bll.Payments.FirstOrDefaultAsync(id.Value, User.GetUserId());
+        if (payment == null)
         {
-            var appDbContext = _context.Payments.Include(p => p.Requirement).Include(p => p.User);
-            return View(await appDbContext.ToListAsync());
+            return NotFound();
         }
 
-        // GET: Admin/Payment/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        return View(payment);
+    }
+
+    // GET: Admin/Payment/Create
+    public async Task<IActionResult> Create()
+    {
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title));
+        ViewData["UserId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName));
+        return View();
+    }
+
+    // POST: Admin/Payment/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(Payment payment)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null || _context.Payments == null)
-            {
-                return NotFound();
-            }
-
-            var payment = await _context.Payments
-                .Include(p => p.Requirement)
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            return View(payment);
-        }
-
-        // GET: Admin/Payment/Create
-        public IActionResult Create()
-        {
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description");
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId");
-            return View();
-        }
-
-        // POST: Admin/Payment/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Amount,Timestamp,RequirementId,UserId,Id")] Payment payment)
-        {
-            if (ModelState.IsValid)
-            {
-                payment.Id = Guid.NewGuid();
-                _context.Add(payment);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", payment.UserId);
-            return View(payment);
-        }
-
-        // GET: Admin/Payment/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null || _context.Payments == null)
-            {
-                return NotFound();
-            }
-
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", payment.UserId);
-            return View(payment);
-        }
-
-        // POST: Admin/Payment/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Amount,Timestamp,RequirementId,UserId,Id")] Payment payment)
-        {
-            if (id != payment.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(payment);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!PaymentExists(payment.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", payment.RequirementId);
-            ViewData["UserId"] = new SelectList(_context.Users, "Id", "TelegramId", payment.UserId);
-            return View(payment);
-        }
-
-        // GET: Admin/Payment/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.Payments == null)
-            {
-                return NotFound();
-            }
-
-            var payment = await _context.Payments
-                .Include(p => p.Requirement)
-                .Include(p => p.User)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (payment == null)
-            {
-                return NotFound();
-            }
-
-            return View(payment);
-        }
-
-        // POST: Admin/Payment/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            if (_context.Payments == null)
-            {
-                return Problem("Entity set 'AppDbContext.Payments'  is null.");
-            }
-
-            var payment = await _context.Payments.FindAsync(id);
-            if (payment != null)
-            {
-                _context.Payments.Remove(payment);
-            }
-
-            await _context.SaveChangesAsync();
+            payment.Id = Guid.NewGuid();
+            payment.UserId = User.GetUserId();
+            _bll.Payments.Add(payment);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PaymentExists(Guid id)
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), payment.RequirementId);
+        ViewData["UserId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), payment.UserId);
+        return View(payment);
+    }
+
+    // GET: Admin/Payment/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
         {
-            return (_context.Payments?.Any(e => e.Id == id)).GetValueOrDefault();
+            return NotFound();
         }
+
+        var payment = await _bll.Payments.FirstOrDefaultAsync(id.Value, User.GetUserId());
+        if (payment == null)
+        {
+            return NotFound();
+        }
+
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), payment.RequirementId);
+        ViewData["UserId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), payment.UserId);
+        return View(payment);
+    }
+
+    // POST: Admin/Payment/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, Payment payment)
+    {
+        if (id != payment.Id)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _bll.Payments.UpdateAsync(payment, User.GetUserId());
+                await _bll.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await PaymentExists(payment.Id))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), payment.RequirementId);
+        ViewData["UserId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), payment.UserId);
+        return View(payment);
+    }
+
+    // GET: Admin/Payment/Delete/5
+    public async Task<IActionResult> Delete(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var payment = await _bll.Payments.FirstOrDefaultAsync(id.Value, User.GetUserId());
+        if (payment == null)
+        {
+            return NotFound();
+        }
+
+        return View(payment);
+    }
+
+    // POST: Admin/Payment/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        await _bll.Payments.RemoveAsync(id, User.GetUserId());
+        await _bll.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<bool> PaymentExists(Guid id)
+    {
+        return await _bll.Payments.ExistsAsync(id);
     }
 }

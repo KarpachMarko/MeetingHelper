@@ -14,6 +14,13 @@ public class MoneyTransferRepository : BaseEntityRepository<MoneyTransfer, Domai
     {
     }
 
+    protected override IQueryable<Domain.MoneyTransfer> CreateQuery(bool noTracking = true)
+    {
+        return base.CreateQuery(noTracking)
+            .Include(transfer => transfer.Sender)
+            .Include(transfer => transfer.Receiver);
+    }
+
     public async Task<IEnumerable<MoneyTransfer>> GetMeetingMoneyTransfers(Guid meetingId)
     {
         var moneyTransfers = await CreateQuery()

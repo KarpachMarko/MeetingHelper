@@ -14,6 +14,12 @@ public class RequirementRepository : BaseEntityUserDependentRepository<Requireme
     {
     }
 
+    protected override IQueryable<Domain.Requirement> CreateQuery(bool noTracking = true)
+    {
+        return base.CreateQuery(noTracking)
+            .Include(requirement => requirement.Event);
+    }
+
     public static bool CheckOwnership(Requirement requirement, Guid userId)
     {
         // TODO

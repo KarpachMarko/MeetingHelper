@@ -1,179 +1,154 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using App.BLL.DTO;
+using App.Contracts.BLL;
+using Base.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class RequirementOptionController : Controller
 {
-    public class RequirementOptionController : Controller
+    private readonly IAppBll _bll;
+
+    public RequirementOptionController(IAppBll bll)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+    }
 
-        public RequirementOptionController(AppDbContext context)
+    // GET: Admin/RequirementOption
+    public async Task<IActionResult> Index()
+    {
+        var requirementOptions = await _bll.RequirementOptions.GetAllAsync();
+        return View(requirementOptions);
+    }
+
+    // GET: Admin/RequirementOption/Details/5
+    public async Task<IActionResult> Details(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: Admin/RequirementOption
-        public async Task<IActionResult> Index()
+        var requirementOption = await _bll.RequirementOptions.FirstOrDefaultAsync(id.Value);
+        if (requirementOption == null)
         {
-            var appDbContext = _context.RequirementOptions.Include(r => r.Requirement);
-            return View(await appDbContext.ToListAsync());
+            return NotFound();
         }
 
-        // GET: Admin/RequirementOption/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        return View(requirementOption);
+    }
+
+    // GET: Admin/RequirementOption/Create
+    public async Task<IActionResult> Create()
+    {
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title));
+        return View();
+    }
+
+    // POST: Admin/RequirementOption/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(RequirementOption requirementOption)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null || _context.RequirementOptions == null)
-            {
-                return NotFound();
-            }
-
-            var requirementOption = await _context.RequirementOptions
-                .Include(r => r.Requirement)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (requirementOption == null)
-            {
-                return NotFound();
-            }
-
-            return View(requirementOption);
-        }
-
-        // GET: Admin/RequirementOption/Create
-        public IActionResult Create()
-        {
-            ViewData["RequirementId"] = new SelectList(_context.Requirements, "Id", "Description");
-            return View();
-        }
-
-        // POST: Admin/RequirementOption/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
-        {
-            if (ModelState.IsValid)
-            {
-                requirementOption.Id = Guid.NewGuid();
-                _context.Add(requirementOption);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
-            return View(requirementOption);
-        }
-
-        // GET: Admin/RequirementOption/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null || _context.RequirementOptions == null)
-            {
-                return NotFound();
-            }
-
-            var requirementOption = await _context.RequirementOptions.FindAsync(id);
-            if (requirementOption == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
-            return View(requirementOption);
-        }
-
-        // POST: Admin/RequirementOption/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Title,Description,Link,Price,RequirementId,Id")] RequirementOption requirementOption)
-        {
-            if (id != requirementOption.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(requirementOption);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!RequirementOptionExists(requirementOption.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["RequirementId"] =
-                new SelectList(_context.Requirements, "Id", "Description", requirementOption.RequirementId);
-            return View(requirementOption);
-        }
-
-        // GET: Admin/RequirementOption/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.RequirementOptions == null)
-            {
-                return NotFound();
-            }
-
-            var requirementOption = await _context.RequirementOptions
-                .Include(r => r.Requirement)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (requirementOption == null)
-            {
-                return NotFound();
-            }
-
-            return View(requirementOption);
-        }
-
-        // POST: Admin/RequirementOption/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            if (_context.RequirementOptions == null)
-            {
-                return Problem("Entity set 'AppDbContext.RequirementOptions'  is null.");
-            }
-
-            var requirementOption = await _context.RequirementOptions.FindAsync(id);
-            if (requirementOption != null)
-            {
-                _context.RequirementOptions.Remove(requirementOption);
-            }
-
-            await _context.SaveChangesAsync();
+            requirementOption.Id = Guid.NewGuid();
+            _bll.RequirementOptions.Add(requirementOption);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool RequirementOptionExists(Guid id)
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), requirementOption.RequirementId);
+        return View(requirementOption);
+    }
+
+    // GET: Admin/RequirementOption/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
         {
-            return (_context.RequirementOptions?.Any(e => e.Id == id)).GetValueOrDefault();
+            return NotFound();
         }
+
+        var requirementOption = await _bll.RequirementOptions.FirstOrDefaultAsync(id.Value);
+        if (requirementOption == null)
+        {
+            return NotFound();
+        }
+
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), requirementOption.RequirementId);
+        return View(requirementOption);
+    }
+
+    // POST: Admin/RequirementOption/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, RequirementOption requirementOption)
+    {
+        if (id != requirementOption.Id)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _bll.RequirementOptions.UpdateAsync(requirementOption);
+                await _bll.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await RequirementOptionExists(requirementOption.Id))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewData["RequirementId"] = new SelectList(await _bll.Requirements.GetAllAsync(User.GetUserId()), nameof(Requirement.Id), nameof(Requirement.Title), requirementOption.RequirementId);
+        return View(requirementOption);
+    }
+
+    // GET: Admin/RequirementOption/Delete/5
+    public async Task<IActionResult> Delete(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var requirementOption = await _bll.RequirementOptions.FirstOrDefaultAsync(id.Value);
+        if (requirementOption == null)
+        {
+            return NotFound();
+        }
+
+        return View(requirementOption);
+    }
+
+    // POST: Admin/RequirementOption/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        await _bll.RequirementOptions.RemoveAsync(id);
+        await _bll.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<bool> RequirementOptionExists(Guid id)
+    {
+        return await _bll.RequirementOptions.ExistsAsync(id);
     }
 }

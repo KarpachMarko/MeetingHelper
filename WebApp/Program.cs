@@ -38,7 +38,10 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-builder.Services.AddIdentity<AppUser, AppRole>(options => { options.SignIn.RequireConfirmedEmail = false; })
+builder.Services.AddIdentity<AppUser, AppRole>(options =>
+    {
+        options.SignIn.RequireConfirmedEmail = false;
+    })
     .AddDefaultUI()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();

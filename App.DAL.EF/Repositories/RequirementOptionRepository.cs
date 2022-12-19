@@ -16,6 +16,12 @@ public class RequirementOptionRepository :
     {
     }
 
+    protected override IQueryable<Domain.RequirementOption> CreateQuery(bool noTracking = true)
+    {
+        return base.CreateQuery(noTracking)
+            .Include(option => option.Requirement);
+    }
+
     public async Task<RequirementOption?> GetSelected(Guid requirementId)
     {
         return Mapper.Map(await CreateQuery()

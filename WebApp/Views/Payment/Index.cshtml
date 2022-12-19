@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.Payment>
+@model IEnumerable<App.BLL.DTO.Payment>
 
 @{
     ViewData["Title"] = "Index";
@@ -37,7 +37,7 @@
                 @Html.DisplayFor(modelItem => item.Timestamp)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Requirement!.Description)
+                @Html.DisplayFor(modelItem => item.Requirement!.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User!.TelegramId)

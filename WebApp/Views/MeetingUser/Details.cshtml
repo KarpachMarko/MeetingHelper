@@ -1,4 +1,4 @@
-@model App.Domain.MeetingUser
+@model App.BLL.DTO.MeetingUser
 
 @{
     ViewData["Title"] = "Details";
@@ -20,7 +20,7 @@
             @Html.DisplayNameFor(model => model.Meeting)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Meeting!.Description)
+            @Html.DisplayFor(model => model.Meeting!.Title)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.User)

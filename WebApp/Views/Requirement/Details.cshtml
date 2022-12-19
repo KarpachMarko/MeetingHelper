@@ -1,4 +1,4 @@
-@model App.Domain.Requirement
+@model App.BLL.DTO.Requirement
 
 @{
     ViewData["Title"] = "Details";
@@ -44,7 +44,7 @@
             @Html.DisplayNameFor(model => model.Event)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Event!.Description)
+            @Html.DisplayFor(model => model.Event!.Title)
         </dd>
     </dl>
 </div>

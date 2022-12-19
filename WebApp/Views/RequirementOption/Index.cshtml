@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.RequirementOption>
+@model IEnumerable<App.BLL.DTO.RequirementOption>
 
 @{
     ViewData["Title"] = "Index";
@@ -46,7 +46,7 @@
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Requirement!.Description)
+                @Html.DisplayFor(modelItem => item.Requirement!.Title)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

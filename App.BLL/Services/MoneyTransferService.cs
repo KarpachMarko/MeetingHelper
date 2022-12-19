@@ -53,16 +53,16 @@ public class MoneyTransferService : BaseEntityService<MoneyTransfer, DAL.DTO.Mon
             }
             
             var deptAmount = debts[sender];
-            var receiverRequire = debts[(Guid)receiver];
+            var receiverRequire = debts[receiver.Value];
             var amount = receiverRequire >= Math.Abs(deptAmount) ? deptAmount : -1 * receiverRequire;
 
             debts[sender] -= amount;
-            debts[(Guid)receiver] += amount;
+            debts[receiver.Value] += amount;
             return new MoneyTransfer
             {
                 Amount = amount,
                 SenderId = sender,
-                ReceiverId = (Guid)receiver
+                ReceiverId = receiver.Value
             };
         }
 

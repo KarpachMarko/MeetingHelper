@@ -1,184 +1,158 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using App.BLL.DTO;
+using App.BLL.DTO.Identity;
+using App.Contracts.BLL;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using App.DAL.EF;
-using App.Domain;
 
-namespace WebApp.Controllers
+namespace WebApp.Controllers;
+
+public class MoneyTransferController : Controller
 {
-    public class MoneyTransferController : Controller
+    private readonly IAppBll _bll;
+
+    public MoneyTransferController(IAppBll bll)
     {
-        private readonly AppDbContext _context;
+        _bll = bll;
+    }
 
-        public MoneyTransferController(AppDbContext context)
+    // GET: Admin/MoneyTransfer
+    public async Task<IActionResult> Index()
+    {
+        var moneyTransfers = await _bll.MoneyTransfers.GetAllAsync();
+        return View(moneyTransfers);
+    }
+
+    // GET: Admin/MoneyTransfer/Details/5
+    public async Task<IActionResult> Details(Guid? id)
+    {
+        if (id == null)
         {
-            _context = context;
+            return NotFound();
         }
 
-        // GET: Admin/MoneyTransfer
-        public async Task<IActionResult> Index()
+        var moneyTransfer = await _bll.MoneyTransfers.FirstOrDefaultAsync(id.Value);
+        if (moneyTransfer == null)
         {
-            var appDbContext = _context.MoneyTransfers.Include(m => m.Receiver).Include(m => m.Sender);
-            return View(await appDbContext.ToListAsync());
+            return NotFound();
         }
 
-        // GET: Admin/MoneyTransfer/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        return View(moneyTransfer);
+    }
+
+    // GET: Admin/MoneyTransfer/Create
+    public async Task<IActionResult> Create()
+    {
+        ViewData["ReceiverId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName));
+        ViewData["SenderId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName));
+        return View();
+    }
+
+    // POST: Admin/MoneyTransfer/Create
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Create(MoneyTransfer moneyTransfer)
+    {
+        if (ModelState.IsValid)
         {
-            if (id == null || _context.MoneyTransfers == null)
-            {
-                return NotFound();
-            }
-
-            var moneyTransfer = await _context.MoneyTransfers
-                .Include(m => m.Receiver)
-                .Include(m => m.Sender)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (moneyTransfer == null)
-            {
-                return NotFound();
-            }
-
-            return View(moneyTransfer);
-        }
-
-        // GET: Admin/MoneyTransfer/Create
-        public IActionResult Create()
-        {
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId");
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId");
-            return View();
-        }
-
-        // POST: Admin/MoneyTransfer/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(
-            [Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")]
-            MoneyTransfer moneyTransfer)
-        {
-            if (ModelState.IsValid)
-            {
-                moneyTransfer.Id = Guid.NewGuid();
-                _context.Add(moneyTransfer);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
-            return View(moneyTransfer);
-        }
-
-        // GET: Admin/MoneyTransfer/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
-        {
-            if (id == null || _context.MoneyTransfers == null)
-            {
-                return NotFound();
-            }
-
-            var moneyTransfer = await _context.MoneyTransfers.FindAsync(id);
-            if (moneyTransfer == null)
-            {
-                return NotFound();
-            }
-
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
-            return View(moneyTransfer);
-        }
-
-        // POST: Admin/MoneyTransfer/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id,
-            [Bind("Amount,SentTime,AcceptedTime,Type,SenderId,ReceiverId,ReceiverBankId,Id")]
-            MoneyTransfer moneyTransfer)
-        {
-            if (id != moneyTransfer.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(moneyTransfer);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!MoneyTransferExists(moneyTransfer.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            ViewData["ReceiverId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.ReceiverId);
-            ViewData["SenderId"] = new SelectList(_context.Users, "Id", "TelegramId", moneyTransfer.SenderId);
-            return View(moneyTransfer);
-        }
-
-        // GET: Admin/MoneyTransfer/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null || _context.MoneyTransfers == null)
-            {
-                return NotFound();
-            }
-
-            var moneyTransfer = await _context.MoneyTransfers
-                .Include(m => m.Receiver)
-                .Include(m => m.Sender)
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (moneyTransfer == null)
-            {
-                return NotFound();
-            }
-
-            return View(moneyTransfer);
-        }
-
-        // POST: Admin/MoneyTransfer/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
-        {
-            if (_context.MoneyTransfers == null)
-            {
-                return Problem("Entity set 'AppDbContext.MoneyTransfers'  is null.");
-            }
-
-            var moneyTransfer = await _context.MoneyTransfers.FindAsync(id);
-            if (moneyTransfer != null)
-            {
-                _context.MoneyTransfers.Remove(moneyTransfer);
-            }
-
-            await _context.SaveChangesAsync();
+            moneyTransfer.Id = Guid.NewGuid();
+            _bll.MoneyTransfers.Add(moneyTransfer);
+            await _bll.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool MoneyTransferExists(Guid id)
+        ViewData["ReceiverId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.ReceiverId);
+        ViewData["SenderId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.SenderId);
+        return View(moneyTransfer);
+    }
+
+    // GET: Admin/MoneyTransfer/Edit/5
+    public async Task<IActionResult> Edit(Guid? id)
+    {
+        if (id == null)
         {
-            return (_context.MoneyTransfers?.Any(e => e.Id == id)).GetValueOrDefault();
+            return NotFound();
         }
+
+        var moneyTransfer = await _bll.MoneyTransfers.FirstOrDefaultAsync(id.Value);
+        if (moneyTransfer == null)
+        {
+            return NotFound();
+        }
+
+        ViewData["ReceiverId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.ReceiverId);
+        ViewData["SenderId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.SenderId);
+        return View(moneyTransfer);
+    }
+
+    // POST: Admin/MoneyTransfer/Edit/5
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(Guid id, MoneyTransfer moneyTransfer)
+    {
+        if (id != moneyTransfer.Id)
+        {
+            return NotFound();
+        }
+
+        if (ModelState.IsValid)
+        {
+            try
+            {
+                await _bll.MoneyTransfers.UpdateAsync(moneyTransfer);
+                await _bll.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (! await MoneyTransferExists(moneyTransfer.Id))
+                {
+                    return NotFound();
+                }
+
+                throw;
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewData["ReceiverId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.ReceiverId);
+        ViewData["SenderId"] = new SelectList(await _bll.Users.GetAllAsync(), nameof(AppUser.Id), nameof(AppUser.UserName), moneyTransfer.SenderId);
+        return View(moneyTransfer);
+    }
+
+    // GET: Admin/MoneyTransfer/Delete/5
+    public async Task<IActionResult> Delete(Guid? id)
+    {
+        if (id == null)
+        {
+            return NotFound();
+        }
+
+        var moneyTransfer = await _bll.MoneyTransfers.FirstOrDefaultAsync(id.Value);
+        if (moneyTransfer == null)
+        {
+            return NotFound();
+        }
+
+        return View(moneyTransfer);
+    }
+
+    // POST: Admin/MoneyTransfer/Delete/5
+    [HttpPost, ActionName("Delete")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteConfirmed(Guid id)
+    {
+        await _bll.MoneyTransfers.RemoveAsync(id);
+        await _bll.SaveChangesAsync();
+        return RedirectToAction(nameof(Index));
+    }
+
+    private async Task<bool> MoneyTransferExists(Guid id)
+    {
+        return await _bll.MoneyTransfers.ExistsAsync(id);
     }
 }

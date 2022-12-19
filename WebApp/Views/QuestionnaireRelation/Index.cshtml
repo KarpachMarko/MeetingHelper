@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.QuestionnaireRelation>
+@model IEnumerable<App.BLL.DTO.QuestionnaireRelation>
 
 @{
     ViewData["Title"] = "Index";
@@ -34,13 +34,13 @@
                 @Html.DisplayFor(modelItem => item.Questionnaire!.Question)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Meeting!.Description)
+                @Html.DisplayFor(modelItem => item.Meeting!.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Event!.Description)
+                @Html.DisplayFor(modelItem => item.Event!.Title)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Requirement!.Description)
+                @Html.DisplayFor(modelItem => item.Requirement!.Title)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

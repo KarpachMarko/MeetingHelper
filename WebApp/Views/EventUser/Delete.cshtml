@@ -1,4 +1,4 @@
-@model App.Domain.EventUser
+@model App.BLL.DTO.EventUser
 
 @{
     ViewData["Title"] = "Delete";
@@ -21,7 +21,7 @@
             @Html.DisplayNameFor(model => model.Event)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Event!.Description)
+            @Html.DisplayFor(model => model.Event!.Title)
         </dd>
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.User)

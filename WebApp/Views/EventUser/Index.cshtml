@@ -1,4 +1,4 @@
-@model IEnumerable<App.Domain.EventUser>
+@model IEnumerable<App.BLL.DTO.EventUser>
 
 @{
     ViewData["Title"] = "Index";
@@ -31,7 +31,7 @@
                 @Html.DisplayFor(modelItem => item.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Event!.Description)
+                @Html.DisplayFor(modelItem => item.Event!.Title)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.User!.TelegramId)
