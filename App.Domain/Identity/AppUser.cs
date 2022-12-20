@@ -7,6 +7,13 @@ public class AppUser : BaseUser
 {
     [MaxLength(128)]
     public string TelegramId { get; set; } = default!;
+
+    [MaxLength(128)]
+    public string? FirstName { get; set; }
+    
+    [MaxLength(128)]
+    public string? LastName { get; set; }
+    public string FullName => $"{FirstName} {LastName}";
     
     public ICollection<MeetingUser>? MeetingUsers { get; set; }
     public ICollection<EventUser>? EventUsers { get; set; }

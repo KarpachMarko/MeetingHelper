@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
+using WebApp.TelegramAuthentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,6 +46,8 @@ builder.Services.AddIdentity<AppUser, AppRole>(options =>
     .AddDefaultUI()
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAuthentication("TelegramAuth").AddScheme<TelegramAuthenticationOptions, TelegramAuthenticationHandler>("TelegramAuth", null);
 
 var supportedCultures = builder
     .Configuration

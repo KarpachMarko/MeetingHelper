@@ -16,18 +16,6 @@ public class AppUow : BaseUow<AppDbContext>, IAppUnitOfWork
         _mapper = mapper;
     }
 
-    public async Task RemoveExpiredRefreshTokens(Guid userId)
-    {
-        var tokens = await UowDbContext.RefreshTokens
-            .Where(e =>
-                e.UserId.Equals(userId) &&
-                e.TokenExpirationDateTime < DateTime.UtcNow)
-            .ToListAsync();
-
-        UowDbContext.RemoveRange(tokens);
-        await SaveChangesAsync();
-    }
-
     private IAnswerOptionRepository? _answerOptions;
     public IAnswerOptionRepository AnswerOptions =>
         _answerOptions ??= new AnswerOptionRepository(UowDbContext, new AnswerOptionMapper(_mapper));

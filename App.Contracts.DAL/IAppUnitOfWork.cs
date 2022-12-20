@@ -5,8 +5,6 @@ namespace App.Contracts.DAL;
 
 public interface IAppUnitOfWork : IUnitOfWork
 {
-    Task RemoveExpiredRefreshTokens(Guid userId);
-    
     IAnswerOptionRepository AnswerOptions { get; }
     IBankAccountRepository BankAccounts { get; }
     IEventNavigationRepository EventNavigations { get; }
