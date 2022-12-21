@@ -16,12 +16,12 @@ public class EventRepository : BaseEntityUserDependentRepository<Event, Domain.E
     protected override IQueryable<Domain.Event> CreateQuery(bool noTracking = true)
     {
         return base.CreateQuery(noTracking)
-            .Include(meetingEvent => meetingEvent.Meeting);
+            .Include(meetingEvent => meetingEvent.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers);
     }
 
     public static bool CheckOwnership(Event eventObj, Guid userId)
     {
-        // TODO
-        return true;
+        return eventObj.Meeting?.MeetingUsers?.Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false;
     }
 }

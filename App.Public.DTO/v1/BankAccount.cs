@@ -6,7 +6,7 @@ using Base.Resources.EntityCommon;
 
 namespace App.Public.DTO.v1;
 
-public class BankAccount : DomainEntityId, IDomainEntityUser<AppUser>
+public class BankAccount : DomainEntityId
 {
     [MaxLength(256)]
     [Display(ResourceType = typeof(EntityCommon), Name = "Title")]
@@ -20,6 +20,4 @@ public class BankAccount : DomainEntityId, IDomainEntityUser<AppUser>
     public string Number { get; set; } = default!;
     
     public Guid UserId { get; set; }
-    [Required]
-    public AppUser? User { get; set; }
 }

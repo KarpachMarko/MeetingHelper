@@ -6,15 +6,11 @@ using Base.Domain;
 
 namespace App.Public.DTO.v1;
 
-public class MeetingUser : DomainEntityId, IDomainEntityUser<AppUser>
+public class MeetingUser : DomainEntityId
 {
     public EMeetingRole Role { get; set; }
     
     public Guid MeetingId { get; set; }
-    [Required]
-    public Meeting? Meeting { get; set; }
-    
+
     public Guid UserId { get; set; }
-    [Required]
-    public AppUser? User { get; set; }
 }

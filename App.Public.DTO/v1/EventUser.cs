@@ -6,14 +6,11 @@ using Base.Domain;
 
 namespace App.Public.DTO.v1;
 
-public class EventUser : DomainEntityId, IDomainEntityUser<AppUser>
+public class EventUser : DomainEntityId
 {
     public EEventStatus Status { get; set; }
     
     public Guid EventId { get; set; }
-    [Required]
-    public Event? Event { get; set; }
     
     public Guid UserId { get; set; }
-    public AppUser? User { get; set; }
 }

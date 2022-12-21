@@ -18,12 +18,17 @@ public class EventNavigationRepository :
     {
         return base.CreateQuery(noTracking)
             .Include(navigation => navigation.NextEvent)
-            .Include(navigation => navigation.PreviousEvent);
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers)
+            .Include(navigation => navigation.PreviousEvent)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers);
     }
 
     public static bool CheckOwnership(EventNavigation eventNav, Guid userId)
     {
-        // TODO
-        return true;
+        var meetingUsers = eventNav.PreviousEvent?.Meeting?.MeetingUsers?.ToList() ?? new List<MeetingUser>();
+        meetingUsers.AddRange(eventNav.NextEvent?.Meeting?.MeetingUsers?.ToList() ?? new List<MeetingUser>());
+        return meetingUsers.Any(meetingUser => meetingUser.UserId.Equals(userId));
     }
 }

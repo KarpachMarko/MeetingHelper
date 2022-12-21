@@ -50,7 +50,7 @@ public static class TelegramAuthUtils
 
     public static bool VerifyTelegramData(string initData, string hash)
     {
-        var botToken = ""; // TODO: Get bot token
+        var botToken = Environment.GetEnvironmentVariable("mh_bot_token") ?? "";
         var hmacWebData = new HMACSHA256(Encoding.UTF8.GetBytes("WebAppData"));
         var secretKey = hmacWebData.ComputeHash(Encoding.UTF8.GetBytes(botToken));
 

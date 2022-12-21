@@ -23,6 +23,4 @@ public class RequirementOption : DomainEntityId
     public EOptionStatus Status { get; set; }
     
     public Guid RequirementId { get; set; }
-    [Required]
-    public Requirement? Requirement { get; set; }
 }

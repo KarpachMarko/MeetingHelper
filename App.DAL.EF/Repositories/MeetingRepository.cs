@@ -2,6 +2,7 @@
 using App.DAL.DTO;
 using Base.Contracts;
 using Base.DAL.EF;
+using Microsoft.EntityFrameworkCore;
 
 namespace App.DAL.EF.Repositories;
 
@@ -13,9 +14,14 @@ public class MeetingRepository : BaseEntityUserDependentRepository<Meeting, Doma
     {
     }
 
+    protected override IQueryable<Domain.Meeting> CreateQuery(bool noTracking = true)
+    {
+        return base.CreateQuery(noTracking)
+            .Include(meeting => meeting.MeetingUsers);
+    }
+
     public static bool CheckOwnership(Meeting meeting, Guid userId)
     {
-        // TODO
-        return true;
+        return meeting.MeetingUsers?.Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false;
     }
 }

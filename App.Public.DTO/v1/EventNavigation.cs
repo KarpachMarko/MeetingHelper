@@ -8,11 +8,7 @@ public class EventNavigation : DomainEntityId
 {
     [ForeignKey("PreviousEvent")]
     public Guid PreviousEventId { get; set; }
-    [Required]
-    public Event? PreviousEvent { get; set; }
     
     [ForeignKey("NextEvent")]
     public Guid NextEventId { get; set; }
-    [Required]
-    public Event? NextEvent { get; set; }
 }

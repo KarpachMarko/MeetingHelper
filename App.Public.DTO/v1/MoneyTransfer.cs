@@ -13,16 +13,10 @@ public class MoneyTransfer : DomainEntityId
     public EMoneyTransferType Type { get; set; }
 
     public Guid SenderId { get; set; }
-    [Required]
-    public AppUser? Sender { get; set; }
     
     public Guid ReceiverId { get; set; }
-    [Required]
-    public AppUser? Receiver { get; set; }
 
     public Guid? ReceiverBankId { get; set; }
-    public BankAccount? BankAccount { get; set; }
     
     public Guid? MeetingId { get; set; }
-    public Meeting? Meeting { get; set; }
 }

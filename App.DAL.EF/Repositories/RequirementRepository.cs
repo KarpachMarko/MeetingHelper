@@ -17,13 +17,14 @@ public class RequirementRepository : BaseEntityUserDependentRepository<Requireme
     protected override IQueryable<Domain.Requirement> CreateQuery(bool noTracking = true)
     {
         return base.CreateQuery(noTracking)
-            .Include(requirement => requirement.Event);
+            .Include(requirement => requirement.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers);
     }
 
     public static bool CheckOwnership(Requirement requirement, Guid userId)
     {
-        // TODO
-        return true;
+        return requirement.Event?.Meeting?.MeetingUsers?.Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false;
     }
     
     public async Task<IEnumerable<Requirement>> GetAllInMeeting(Guid meetingId)

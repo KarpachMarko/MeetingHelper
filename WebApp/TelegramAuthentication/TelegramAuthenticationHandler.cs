@@ -53,6 +53,8 @@ public class TelegramAuthenticationHandler : AuthenticationHandler<TelegramAuthe
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, userId.Id.ToString()),
+            new(ClaimTypes.Name, telegramData.FirstName ?? ""),
+            new(ClaimTypes.Surname, telegramData.LastName ?? ""),
             new(ClaimTypes.UserData, authorizationData),
         };
 
