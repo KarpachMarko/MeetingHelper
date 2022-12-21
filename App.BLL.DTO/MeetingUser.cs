@@ -8,8 +8,9 @@ namespace App.BLL.DTO;
 
 public class MeetingUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
-    public EMeetingRole Role { get; set; }
-    
+    [Required]
+    public EMeetingRole? Role { get; set; }
+
     public Guid MeetingId { get; set; }
     [Required]
     public Meeting? Meeting { get; set; }

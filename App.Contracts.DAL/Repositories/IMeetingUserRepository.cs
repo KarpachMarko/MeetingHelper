@@ -13,5 +13,5 @@ public interface IMeetingUserRepository : IEntityUserRepository<MeetingUser, App
 public interface IMeetingUserRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetMeetingUsersInMeeting(Guid meetingId, Guid userId);
 }

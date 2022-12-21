@@ -5,7 +5,7 @@ using Base.Contracts.BLL;
 
 namespace App.Contracts.BLL.Services;
 
-public interface IMeetingUserService : IEntityUserService<MeetingUser, AppUser>, IMeetingRepositoryCustom<MeetingUser>
+public interface IMeetingUserService : IEntityUserService<MeetingUser, AppUser>, IMeetingUserRepositoryCustom<MeetingUser>
 {
     
 }

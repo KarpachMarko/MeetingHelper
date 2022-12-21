@@ -8,7 +8,8 @@ namespace App.Public.DTO.v1;
 
 public class MeetingUser : DomainEntityId
 {
-    public EMeetingRole Role { get; set; }
+    [Required]
+    public EMeetingRole? Role { get; set; }
     
     public Guid MeetingId { get; set; }
 

@@ -8,7 +8,8 @@ namespace App.Domain;
 
 public class MeetingUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
-    public EMeetingRole Role { get; set; }
+    [Required]
+    public EMeetingRole? Role { get; set; }
     
     public Guid MeetingId { get; set; }
     public Meeting? Meeting { get; set; }
