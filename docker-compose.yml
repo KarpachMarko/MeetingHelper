@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  meeting_helper_db: 
+    container_name:   meeting_helper_db-postgres
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=devUser
+      - POSTGRES_PASSWORD=devPassword
+    logging:
+      options:
+        max-size: 10m
+        max-file: "3"
+    ports:
+      - "5445:5432"
+    volumes:
+      - meeting_helper:/var/lib/postgresql/data
+    networks:
+      - meeting_helper_net
+
+volumes:
+  meeting_helper:
+
+networks:
+  meeting_helper_net:
+    driver: bridge
