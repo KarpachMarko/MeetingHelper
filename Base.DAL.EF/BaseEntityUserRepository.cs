@@ -1,8 +1,6 @@
-using System.Reflection;
 using Base.Contracts;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
-using Base.Domain;
 using Base.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -43,19 +41,32 @@ public class BaseEntityUserRepository<TDalEntity, TDomainEntity, TKey, TDalUser,
     protected virtual IQueryable<TDomainEntity> CreateQuery(TKey userId, bool noTracking = true)
     {
         var query = RepoDbSet
-            .AsQueryable()
-            .Include(e => e.User)
-            .Where(e => e.UserId.Equals(userId));
+            .AsQueryable();
         if (noTracking)
         {
             query = query
                 .AsNoTracking();
         }
-        else
+
+        query = query
+            .Include(e => e.User)
+            .Where(e => e.UserId.Equals(userId));
+
+        return query;
+    }
+    
+    protected virtual IQueryable<TDomainEntity> CreateQueryUnsafe(bool noTracking = true)
+    {
+        var query = RepoDbSet
+            .AsQueryable();
+        if (noTracking)
         {
             query = query
-                .Where(e => e.UserId.Equals(userId));
+                .AsNoTracking();
         }
+    
+        query = query
+            .Include(e => e.User);
 
         return query;
     }
@@ -129,7 +140,7 @@ public class BaseEntityUserRepository<TDalEntity, TDomainEntity, TKey, TDalUser,
         return await RepoDbSet.AnyAsync(entity => entity.Id.Equals(id));
     }
 
-    public virtual async Task<TDalEntity> RemoveAsync(TKey userId, TKey id)
+    public virtual async Task<TDalEntity> RemoveAsync(TKey id, TKey userId)
     {
         var entity = await FirstOrDefaultAsync(id, userId);
         if (entity == null)

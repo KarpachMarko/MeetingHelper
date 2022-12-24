@@ -30,5 +30,5 @@ public interface IEntityUserRepository<TEntity, TKey, TUser>
     Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey userId, bool noTracking = true);
     Task<IEnumerable<TEntity>> GetAllAsync(TKey userId, bool noTracking = true);
     Task<bool> ExistsAsync(TKey id);
-    Task<TEntity> RemoveAsync(TKey userId, TKey id);
+    Task<TEntity> RemoveAsync(TKey id, TKey userId);
 }

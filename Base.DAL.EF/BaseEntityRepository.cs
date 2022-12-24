@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using Base.Contracts;
+﻿using Base.Contracts;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Base.Extensions;

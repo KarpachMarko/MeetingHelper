@@ -1,5 +1,4 @@
 using Base.Contracts.Domain;
-using Microsoft.AspNetCore.Identity;
 
 namespace Base.Contracts.DAL;
 
@@ -29,5 +28,5 @@ public interface IEntityUserDependentRepository<TEntity, TKey>
     Task<TEntity?> FirstOrDefaultAsync(TKey id, TKey userId, bool noTracking = true);
     Task<IEnumerable<TEntity>> GetAllAsync(TKey userId, bool noTracking = true);
     Task<bool> ExistsAsync(TKey id);
-    Task<TEntity> RemoveAsync(TKey userId, TKey id);
+    Task<TEntity> RemoveAsync(TKey id, TKey userId);
 }

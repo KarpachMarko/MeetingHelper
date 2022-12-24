@@ -2,7 +2,6 @@ using Base.Contracts;
 using Base.Contracts.DAL;
 using Base.Contracts.Domain;
 using Base.Extensions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace Base.DAL.EF;
@@ -135,7 +134,7 @@ public class BaseEntityUserDependentRepository<TDalEntity, TDomainEntity, TKey, 
         return await RepoDbSet.AnyAsync(entity => entity.Id.Equals(id));
     }
 
-    public virtual async Task<TDalEntity> RemoveAsync(TKey userId, TKey id)
+    public virtual async Task<TDalEntity> RemoveAsync(TKey id, TKey userId)
     {
         var entity = await FirstOrDefaultAsync(id, userId);
         if (entity == null)

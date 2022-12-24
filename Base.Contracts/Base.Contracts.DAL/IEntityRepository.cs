@@ -1,4 +1,5 @@
 ﻿using Base.Contracts.Domain;
+
 namespace Base.Contracts.DAL;
 
 public interface IEntityRepository<TEntity> : IEntityRepository<TEntity, Guid>

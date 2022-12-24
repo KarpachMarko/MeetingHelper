@@ -8,11 +8,22 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="AutoMapper" Version="11.0.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.3" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.3" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.3" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.6" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\App.BLL\App.BLL.csproj" />
+      <ProjectReference Include="..\App.DAL.EF\App.DAL.EF.csproj" />
+      <ProjectReference Include="..\App.Public.DTO\App.Public.DTO.csproj" />
     </ItemGroup>
 
 </Project>
