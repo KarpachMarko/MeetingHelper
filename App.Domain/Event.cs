@@ -16,17 +16,18 @@ public class Event : DomainEntityId
     
     public DateTime StartDate { get; set; }
     public DateTime EndDate { get; set; }
-    public DateTime DecisionDate { get; set; }
-    public double BudgetPerPerson { get; set; }
-    public int MinPersonCount { get; set; }
-    public int MaxPersonCount { get; set; }
+    public DateTime? DecisionDate { get; set; }
+    public double? BudgetPerPerson { get; set; }
+    public int? MinPersonCount { get; set; }
+    public int? MaxPersonCount { get; set; }
 
     [MaxLength(256)]
     public string LocationTitle { get; set; } = default!;
     [MaxLength(2512)]
-    public string LocationLink { get; set; } = default!;
+    public string? LocationLink { get; set; } = default!;
     
     public Guid MeetingId { get; set; }
+    [Required]
     public Meeting? Meeting { get; set; }
     
     public ICollection<EventUser>? EventUsers { get; set; }

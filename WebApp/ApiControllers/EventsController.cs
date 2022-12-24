@@ -4,6 +4,7 @@ using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 public class EventsController : ControllerBase
 {
     private readonly IAppBll _bll;
@@ -20,6 +22,34 @@ public class EventsController : ControllerBase
     {
         _bll = bll;
         _mapper = new EventMapper(mapper);
+    }
+    
+    [HttpGet("meeting/{id}")]
+    public async Task<ActionResult<IEnumerable<Event>>> GetMeetingEvents(Guid id)
+    {
+        var events = await _bll.Events.GetMeetingEvents(id, User.GetUserId());
+        return Ok(_mapper.Map(events));
+    }
+    
+    [HttpGet("meeting/{id}/first")]
+    public async Task<ActionResult<IEnumerable<Event>>> GetFirstMeetingEvents(Guid id)
+    {
+        var events = await _bll.Events.GetFirstMeetingEvents(id, User.GetUserId(), _bll.EventNavigations);
+        return Ok(_mapper.Map(events));
+    }
+    
+    [HttpGet("{id}/next")]
+    public async Task<ActionResult<IEnumerable<Event>>> GetNextEvents(Guid id)
+    {
+        var events = await _bll.Events.GetNextEvents(id, User.GetUserId(), _bll.EventNavigations);
+        return Ok(_mapper.Map(events));
+    }
+    
+    [HttpGet("{id}/previous")]
+    public async Task<ActionResult<IEnumerable<Event>>> GetPreviousEvents(Guid id)
+    {
+        var events = await _bll.Events.GetPreviousEvents(id, User.GetUserId(), _bll.EventNavigations);
+        return Ok(_mapper.Map(events));
     }
 
     // GET: api/Events

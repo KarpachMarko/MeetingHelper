@@ -12,4 +12,19 @@ public class EventNavigationService :
     public EventNavigationService(IEventNavigationRepository repository, IMapper<EventNavigation, DAL.DTO.EventNavigation> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<IEnumerable<EventNavigation>> GetMeetingEventNavigations(Guid meetingId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetMeetingEventNavigations(meetingId, userId));
+    }
+
+    public async Task<IEnumerable<EventNavigation>> GetNextEventNavigations(Guid eventId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetNextEventNavigations(eventId, userId));
+    }
+
+    public async Task<IEnumerable<EventNavigation>> GetPreviousEventNavigations(Guid eventId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetPreviousEventNavigations(eventId, userId));
+    }
 }

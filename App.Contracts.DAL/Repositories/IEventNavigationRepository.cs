@@ -12,5 +12,7 @@ public interface IEventNavigationRepository : IEntityUserDependentRepository<Eve
 public interface IEventNavigationRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetMeetingEventNavigations(Guid meetingId, Guid userId);
+    public Task<IEnumerable<TEntity>> GetNextEventNavigations(Guid eventId, Guid userId);
+    public Task<IEnumerable<TEntity>> GetPreviousEventNavigations(Guid eventId, Guid userId);
 }

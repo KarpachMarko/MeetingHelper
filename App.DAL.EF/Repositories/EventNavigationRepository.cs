@@ -31,4 +31,38 @@ public class EventNavigationRepository :
         meetingUsers.AddRange(eventNav.NextEvent?.Meeting?.MeetingUsers?.ToList() ?? new List<MeetingUser>());
         return meetingUsers.Any(meetingUser => meetingUser.UserId.Equals(userId));
     }
+
+    private static bool IsInMeeting(EventNavigation eventNav, Guid meetingId)
+    {
+        return (eventNav.PreviousEvent?.MeetingId.Equals(meetingId) ?? false) ||
+               (eventNav.NextEvent?.MeetingId.Equals(meetingId) ?? false);
+    }
+
+    public async Task<IEnumerable<EventNavigation>> GetMeetingEventNavigations(Guid meetingId, Guid userId)
+    {
+        var eventNavigations = await CreateQuery().ToListAsync();
+
+        var meetingEventNavigations = Mapper.Map(eventNavigations)
+            .Where(navigation => IsInMeeting(navigation, meetingId))
+            .Where(navigation => CheckOwnership(navigation, userId));
+        return meetingEventNavigations;
+    }
+
+    public async Task<IEnumerable<EventNavigation>> GetNextEventNavigations(Guid eventId, Guid userId)
+    {
+        var eventNavigations = await CreateQuery()
+            .Where(navigation => navigation.PreviousEventId.Equals(eventId))
+            .ToListAsync();
+
+        return Mapper.Map(eventNavigations).Where(navigation => CheckOwnership(navigation, userId));
+    }
+
+    public async Task<IEnumerable<EventNavigation>> GetPreviousEventNavigations(Guid eventId, Guid userId)
+    {
+        var eventNavigations = await CreateQuery()
+            .Where(navigation => navigation.NextEventId.Equals(eventId))
+            .ToListAsync();
+
+        return Mapper.Map(eventNavigations).Where(navigation => CheckOwnership(navigation, userId));
+    }
 }

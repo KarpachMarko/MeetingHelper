@@ -24,4 +24,12 @@ public class EventRepository : BaseEntityUserDependentRepository<Event, Domain.E
     {
         return eventObj.Meeting?.MeetingUsers?.Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false;
     }
+
+    public async Task<IEnumerable<Event>> GetMeetingEvents(Guid meetingId, Guid userId)
+    {
+        var meetingEvents = Mapper.Map(
+            await CreateQuery().Where(meetingEvent => meetingEvent.MeetingId.Equals(meetingId)).ToListAsync()).ToList();
+        
+        return CheckOwnership(meetingEvents.First(), userId) ? meetingEvents : new List<Event>();
+    }
 }

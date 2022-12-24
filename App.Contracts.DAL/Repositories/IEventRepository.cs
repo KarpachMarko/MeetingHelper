@@ -12,5 +12,5 @@ public interface IEventRepository : IEntityUserDependentRepository<Event>, IEven
 public interface IEventRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetMeetingEvents(Guid meetingId, Guid userId);
 }
