@@ -12,6 +12,7 @@ public interface IAppUnitOfWork : IUnitOfWork
     IEventUserRepository EventUsers { get; }
     IMeetingRepository Meetings { get; }
     IMeetingUserRepository MeetingUsers { get; }
+    IMeetingInviteRepository MeetingInvites { get; }
     IMoneyTransferRepository MoneyTransfers { get; }
     IPaymentRepository Payments { get; }
     IQuestionnaireRelationRepository QuestionnaireRelations { get; }

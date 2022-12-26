@@ -12,5 +12,6 @@ public interface IUserRepository : IEntityRepository<AppUser>, IUserRepositoryCu
 public interface IUserRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
+    public Task<Guid?> GetByTgId(string userTgId);
     public Task<IEnumerable<TEntity>> GetRequirementUsers(Guid requirementId);
 }

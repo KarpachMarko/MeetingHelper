@@ -15,6 +15,7 @@ public class AppUser : BaseUser
     public string? LastName { get; set; }
     public string FullName => $"{FirstName} {LastName}";
     
+    public ICollection<MeetingInvite>? MeetingInvites { get; set; }
     public ICollection<MeetingUser>? MeetingUsers { get; set; }
     public ICollection<EventUser>? EventUsers { get; set; }
     public ICollection<RequirementUser>? RequirementUsers { get; set; }

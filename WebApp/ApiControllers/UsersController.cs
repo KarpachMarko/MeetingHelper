@@ -33,4 +33,17 @@ public class UsersController : ControllerBase
 
         return _mapper.Map(user)!;
     }
+    
+    [HttpGet("userTgId/{id}")]
+    public async Task<ActionResult<Guid>> GetUserId(string id)
+    {
+        var userId = await _bll.Users.GetByTgId(id);
+
+        if (userId == null)
+        {
+            return NotFound();
+        }
+
+        return userId;
+    }
 }

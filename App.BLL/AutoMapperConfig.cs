@@ -15,6 +15,7 @@ public class AutoMapperConfig : Profile
         CreateMap<EventUser, DAL.DTO.EventUser>().ReverseMap();
         CreateMap<Meeting, DAL.DTO.Meeting>().ReverseMap();
         CreateMap<MeetingUser, DAL.DTO.MeetingUser>().ReverseMap();
+        CreateMap<MeetingInvite, DAL.DTO.MeetingInvite>().ReverseMap();
         CreateMap<MoneyTransfer, DAL.DTO.MoneyTransfer>().ReverseMap();
         CreateMap<Payment, DAL.DTO.Payment>().ReverseMap();
         CreateMap<Questionnaire, DAL.DTO.Questionnaire>().ReverseMap();

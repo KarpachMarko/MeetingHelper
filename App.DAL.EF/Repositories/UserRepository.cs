@@ -13,6 +13,11 @@ public class UserRepository : BaseEntityRepository<AppUser, Domain.Identity.AppU
     {
     }
 
+    public async Task<Guid?> GetByTgId(string userTgId)
+    {
+        return (await CreateQuery().FirstOrDefaultAsync(user => user.TelegramId.Equals(userTgId)))?.Id;
+    }
+
     public async Task<IEnumerable<AppUser>> GetRequirementUsers(Guid requirementId)
     {
         var users = await CreateQuery()

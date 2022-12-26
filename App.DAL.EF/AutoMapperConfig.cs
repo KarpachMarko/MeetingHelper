@@ -15,6 +15,7 @@ public class AutoMapperConfig : Profile
         CreateMap<EventUser, Domain.EventUser>().ReverseMap();
         CreateMap<Meeting, Domain.Meeting>().ReverseMap();
         CreateMap<MeetingUser, Domain.MeetingUser>().ReverseMap();
+        CreateMap<MeetingInvite, Domain.MeetingInvite>().ReverseMap();
         CreateMap<MoneyTransfer, Domain.MoneyTransfer>().ReverseMap();
         CreateMap<Payment, Domain.Payment>().ReverseMap();
         CreateMap<Questionnaire, Domain.Questionnaire>().ReverseMap();

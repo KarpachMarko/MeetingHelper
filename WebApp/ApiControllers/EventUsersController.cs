@@ -1,4 +1,5 @@
 using App.Contracts.BLL;
+using App.Public.DTO.Mappers;
 using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
@@ -19,7 +20,7 @@ public class EventUsersController : ControllerBase
     public EventUsersController(IAppBll bll, IMapper mapper)
     {
         _bll = bll;
-        _mapper = new BaseMapper<EventUser, App.BLL.DTO.EventUser>(mapper);
+        _mapper = new EventUserMapper(mapper);
     }
 
     // GET: api/EventUsers

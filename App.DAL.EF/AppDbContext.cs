@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<EventUser> EventUsers { get; set; } = default!;
     public DbSet<Meeting> Meetings { get; set; } = default!;
     public DbSet<MeetingUser> MeetingUsers { get; set; } = default!;
+    public DbSet<MeetingInvite> MeetingInvites { get; set; } = default!;
     public DbSet<MoneyTransfer> MoneyTransfers { get; set; } = default!;
     public DbSet<Payment> Payments { get; set; } = default!;
     public DbSet<Questionnaire> Questionnaires { get; set; } = default!;

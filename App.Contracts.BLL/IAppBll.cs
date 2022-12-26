@@ -12,6 +12,7 @@ public interface IAppBll : IBll
     IEventUserService EventUsers { get; }
     IMeetingService Meetings { get; }
     IMeetingUserService MeetingUsers { get; }
+    IMeetingInviteService MeetingInvites { get; }
     IMoneyTransferService MoneyTransfers { get; }
     IPaymentService Payments { get; }
     IQuestionnaireRelationService QuestionnaireRelations { get; }
