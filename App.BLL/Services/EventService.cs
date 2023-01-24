@@ -21,14 +21,8 @@ public class EventService : BaseEntityUserDependentService<Event, DAL.DTO.Event,
         IEventNavigationService eventNavigationService)
     {
         var eventNavigations = (await eventNavigationService.GetMeetingEventNavigations(meetingId, userId)).ToList();
-        if (eventNavigations.Count == 0)
-        {
-            var meetingEvents = await GetMeetingEvents(meetingId, userId);
-            return meetingEvents;
-        }
-        var firstEventNavigations = eventNavigations
-            .Select(navigation => navigation.PreviousEvent!)
-            .Where(meetingEvent => !eventNavigations.Any(navigation => navigation.NextEventId.Equals(meetingEvent.Id)));
+        var meetingEvents = await GetMeetingEvents(meetingId, userId);
+        var firstEventNavigations = meetingEvents.Where(meetingEvent => eventNavigations.All(navigation => navigation.NextEventId != meetingEvent.Id));
 
         return firstEventNavigations;
     }
