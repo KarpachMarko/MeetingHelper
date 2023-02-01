@@ -19,12 +19,21 @@ public class RequirementUserRepository :
     protected override IQueryable<Domain.RequirementUser> CreateQuery(Guid userId, bool noTracking = true)
     {
         return base.CreateQuery(userId, noTracking)
-        .Include(requirementUser => requirementUser.Requirement);
+            .Include(requirementUser => requirementUser.Requirement);
     }
 
     protected override IQueryable<Domain.RequirementUser> CreateQueryUnsafe(bool noTracking = true)
     {
         return base.CreateQueryUnsafe(noTracking)
-        .Include(requirementUser => requirementUser.Requirement);
+            .Include(requirementUser => requirementUser.Requirement);
+    }
+
+    public override RequirementUser Add(RequirementUser entity)
+    {
+        var requirementUser = CreateQueryUnsafe()
+            .FirstOrDefault(requirementUser => requirementUser.RequirementId.Equals(entity.RequirementId) &&
+                                               requirementUser.UserId.Equals(entity.UserId));
+
+        return requirementUser == null ? base.Add(entity) : Mapper.Map(requirementUser)!;
     }
 }

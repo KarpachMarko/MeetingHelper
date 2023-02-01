@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 namespace App.DAL.EF.Repositories;
 
 public class MeetingInviteRepository : BaseEntityUserRepository<MeetingInvite, Domain.MeetingInvite, AppUser,
-        Domain.Identity.AppUser, AppDbContext>, IMeetingInviteRepository
+    Domain.Identity.AppUser, AppDbContext>, IMeetingInviteRepository
 {
     public MeetingInviteRepository(AppDbContext dbContext, IMapper<MeetingInvite, Domain.MeetingInvite> mapper) : base(
         dbContext, mapper)
@@ -20,18 +20,21 @@ public class MeetingInviteRepository : BaseEntityUserRepository<MeetingInvite, D
     protected override IQueryable<Domain.MeetingInvite> CreateQuery(Guid userId, bool noTracking = true)
     {
         return base.CreateQuery(userId, noTracking)
-        .Include(invite => invite.Meeting);
+            .Include(invite => invite.Meeting);
     }
 
     protected override IQueryable<Domain.MeetingInvite> CreateQueryUnsafe(bool noTracking = true)
     {
         return base.CreateQueryUnsafe(noTracking)
-        .Include(invite => invite.Meeting);
+            .Include(invite => invite.Meeting);
     }
 
     public override MeetingInvite Add(MeetingInvite entity)
     {
-        var invite = CreateQueryUnsafe().FirstOrDefault(invite => invite.UserId.Equals(entity.UserId));
+        var invite = CreateQueryUnsafe()
+            .FirstOrDefault(invite => invite.MeetingId.Equals(entity.MeetingId) &&
+                                      invite.UserId.Equals(entity.UserId));
+
         return invite != null ? Mapper.Map(invite)! : base.Add(entity);
     }
 

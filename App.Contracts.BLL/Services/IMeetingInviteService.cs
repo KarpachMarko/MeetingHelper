@@ -5,8 +5,11 @@ using Base.Contracts.BLL;
 
 namespace App.Contracts.BLL.Services;
 
-public interface IMeetingInviteService : IEntityUserService<MeetingInvite, AppUser>, IMeetingInviteRepositoryCustom<MeetingInvite>
+public interface IMeetingInviteService : IEntityUserService<MeetingInvite, AppUser>,
+    IMeetingInviteRepositoryCustom<MeetingInvite>
 {
-    public Task<bool> Accept(Guid meetingId, Guid userId, IMeetingUserService meetingUserService);
+    public Task<bool> Accept(Guid meetingId, Guid userId, IMeetingUserService meetingUserService,
+        IEventService eventService, IEventUserService eventUserService);
+
     public Task<bool> Reject(Guid meetingId, Guid userId);
 }

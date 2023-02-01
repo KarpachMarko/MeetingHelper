@@ -33,16 +33,17 @@ namespace WebApp.ApiControllers
         [HttpGet("meeting/{meetingId}/accept")]
         public async Task<ActionResult> AcceptInvite(Guid meetingId)
         {
-            var success = await _bll.MeetingInvites.Accept(meetingId, User.GetUserId(), _bll.MeetingUsers);
+            var success = await _bll.MeetingInvites.Accept(meetingId, User.GetUserId(), _bll.MeetingUsers,
+                _bll.Events, _bll.EventUsers);
             if (!success)
             {
                 return NotFound("You have no unanswered invite to this meeting");
             }
-            
+
             await _bll.SaveChangesAsync();
             return Ok();
         }
-        
+
         [HttpGet("meeting/{meetingId}/reject")]
         public async Task<ActionResult> RejectInvite(Guid meetingId)
         {
@@ -51,7 +52,7 @@ namespace WebApp.ApiControllers
             {
                 return NotFound("You have no unanswered invite to this meeting");
             }
-            
+
             await _bll.SaveChangesAsync();
             return Ok();
         }

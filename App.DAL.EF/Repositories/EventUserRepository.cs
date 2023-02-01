@@ -21,4 +21,26 @@ public class EventUserRepository :
         mapper)
     {
     }
+
+    public async Task<IEnumerable<EventUser>> GetEventUsersInEvent(Guid eventId, Guid userId)
+    {
+        var eventUsers = await CreateQueryUnsafe()
+            .Include(eventUser => eventUser.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers)
+            .Where(eventUser => eventUser.EventId.Equals(eventId))
+            .Where(eventUser => eventUser.Event!.Meeting!.MeetingUsers!.Any(meetingUser => meetingUser.UserId.Equals(userId)))
+            .ToListAsync();
+
+        return Mapper.Map(eventUsers);
+    }
+
+    public override EventUser Add(EventUser entity)
+    {
+        var eventUser = CreateQueryUnsafe()
+            .FirstOrDefault(eventUser => eventUser.EventId.Equals(entity.EventId) &&
+                                         eventUser.UserId.Equals(entity.UserId));
+        
+        return eventUser == null ? base.Add(entity) : Mapper.Map(eventUser)!;
+    }
 }

@@ -65,4 +65,13 @@ public class EventNavigationRepository :
 
         return Mapper.Map(eventNavigations).Where(navigation => CheckOwnership(navigation, userId));
     }
+
+    public override EventNavigation Add(EventNavigation entity)
+    {
+        var eventNavigation = CreateQuery()
+            .FirstOrDefault(navigation => navigation.NextEventId.Equals(entity.NextEventId) &&
+                                          navigation.PreviousEventId.Equals(entity.PreviousEventId));
+
+        return eventNavigation == null ? base.Add(entity) : Mapper.Map(eventNavigation)!;
+    }
 }

@@ -3,8 +3,8 @@ using App.Public.DTO.Mappers;
 using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
-using Base.DAL;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,6 +12,7 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 public class EventUsersController : ControllerBase
 {
     private readonly IAppBll _bll;
@@ -21,6 +22,13 @@ public class EventUsersController : ControllerBase
     {
         _bll = bll;
         _mapper = new EventUserMapper(mapper);
+    }
+    
+    [HttpGet("event/{id}")]
+    public async Task<ActionResult<IEnumerable<MeetingUser>>> GetMeetingUsersInMeeting(Guid id)
+    {
+        var eventUsers = await _bll.EventUsers.GetEventUsersInEvent(id, User.GetUserId());
+        return Ok(_mapper.Map(eventUsers));
     }
 
     // GET: api/EventUsers
