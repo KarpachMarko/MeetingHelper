@@ -69,6 +69,15 @@ public class AppUow : BaseUow<AppDbContext>, IAppUnitOfWork
     public IRequirementRepository Requirements =>
         _requirements ??= new RequirementRepository(UowDbContext, new RequirementMapper(_mapper));
 
+    private IRequirementParameterRepository? _requirementParameter;
+    public IRequirementParameterRepository RequirementParameters => _requirementParameter ??=
+        new RequirementParameterRepository(UowDbContext, new RequirementParameterMapper(_mapper));
+    
+    private IRequirementParameterInOptionRepository? _requirementParameterInOption;
+    public IRequirementParameterInOptionRepository RequirementParameterInOptions =>
+        _requirementParameterInOption ??=
+            new RequirementParameterInOptionRepository(UowDbContext, new RequirementParameterInOptionMapper(_mapper));
+
     private IRequirementUserRepository? _requirementUsers;
     public IRequirementUserRepository RequirementUsers => _requirementUsers ??=
         new RequirementUserRepository(UowDbContext, new RequirementUserMapper(_mapper));

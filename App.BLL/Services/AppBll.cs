@@ -80,6 +80,15 @@ public class AppBll : BaseBll<IAppUnitOfWork>, IAppBll
     public IRequirementService Requirements =>
         _requirements ??= new RequirementService(UnitOfWork.Requirements, new RequirementMapper(_mapper));
 
+    private IRequirementParameterService? _requirementParameter;
+    public IRequirementParameterService RequirementParameters => _requirementParameter ??=
+        new RequirementParameterService(UnitOfWork.RequirementParameters, new RequirementParameterMapper(_mapper));
+
+    private IRequirementParameterInOptionService? _requirementParameterInOption;
+    public IRequirementParameterInOptionService RequirementsParameterInOptions => _requirementParameterInOption ??=
+        new RequirementParameterInOptionService(UnitOfWork.RequirementParameterInOptions,
+            new RequirementParameterInOptionMapper(_mapper));
+
     private IRequirementUserService? _requirementUsers;
     public IRequirementUserService RequirementUsers => _requirementUsers ??=
         new RequirementUserService(UnitOfWork.RequirementUsers, new RequirementUserMapper(_mapper));

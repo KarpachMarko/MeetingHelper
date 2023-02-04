@@ -19,6 +19,8 @@ public interface IAppUnitOfWork : IUnitOfWork
     IQuestionnaireRepository Questionnaires { get; }
     IRequirementOptionRepository RequirementOptions { get; }
     IRequirementRepository Requirements { get; }
+    IRequirementParameterRepository RequirementParameters { get; }
+    IRequirementParameterInOptionRepository RequirementParameterInOptions { get; }
     IRequirementUserRepository RequirementUsers { get; }
     IUserRepository Users { get; }
 }

@@ -19,6 +19,8 @@ public interface IAppBll : IBll
     IQuestionnaireService Questionnaires { get; }
     IRequirementOptionService RequirementOptions { get; }
     IRequirementService Requirements { get; }
+    IRequirementParameterService RequirementParameters { get; }
+    IRequirementParameterInOptionService RequirementsParameterInOptions { get; }
     IRequirementUserService RequirementUsers { get; }
     IUserService Users { get; }
 }

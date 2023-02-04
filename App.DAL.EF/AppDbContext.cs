@@ -20,6 +20,8 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<Questionnaire> Questionnaires { get; set; } = default!;
     public DbSet<QuestionnaireRelation> QuestionnaireRelations { get; set; } = default!;
     public DbSet<Requirement> Requirements { get; set; } = default!;
+    public DbSet<RequirementParameter> RequirementParameters { get; set; } = default!;
+    public DbSet<RequirementParameterInOption> RequirementsParameterInOptions { get; set; } = default!;
     public DbSet<RequirementOption> RequirementOptions { get; set; } = default!;
     public DbSet<RequirementUser> RequirementUsers { get; set; } = default!;
 
