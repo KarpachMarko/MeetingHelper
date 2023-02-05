@@ -12,5 +12,6 @@ public interface IRequirementParameterRepository : IEntityUserDependentRepositor
 public interface IRequirementParameterRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetRequirementParameters(Guid requirementId, Guid userId);
+    public Task SetRequirementParameters(Guid requirementId, IEnumerable<TEntity> parameters, Guid userId);
 }

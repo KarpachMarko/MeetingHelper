@@ -19,5 +19,4 @@ public class Requirement : DomainEntityId
     public DateTime PaymentDate { get; set; }
 
     public Guid EventId { get; set; }
-    public Event? Event { get; set; }
 }

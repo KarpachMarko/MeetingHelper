@@ -4,6 +4,7 @@ using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,17 +12,35 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RequirementParameterController : ControllerBase
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
+public class RequirementParametersController : ControllerBase
 {
     private readonly IAppBll _bll;
     private readonly IMapper<RequirementParameter, App.BLL.DTO.RequirementParameter> _mapper;
 
-    public RequirementParameterController(IAppBll bll, IMapper mapper)
+    public RequirementParametersController(IAppBll bll, IMapper mapper)
     {
         _bll = bll;
         _mapper = new RequirementParameterMapper(mapper);
     }
 
+    [HttpGet("requirement/{requirementId}")]
+    public async Task<ActionResult<IEnumerable<RequirementParameter>>> GetRequirementParameters(Guid requirementId)
+    {
+        var requirementParameters = await _bll.RequirementParameters.GetRequirementParameters(requirementId, User.GetUserId());
+        return Ok(_mapper.Map(requirementParameters));
+    }
+    
+    [HttpPut("requirement/{requirementId}")]
+    public async Task<ActionResult<IEnumerable<RequirementParameter>>> SetRequirementParameters(Guid requirementId, IEnumerable<RequirementParameter> parameters)
+    {
+        await _bll.RequirementParameters.SetRequirementParameters(requirementId, _mapper.Map(parameters), User.GetUserId());
+        
+        await _bll.SaveChangesAsync();
+        
+        return NoContent();
+    }
+    
     // GET: api/RequirementParameter
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RequirementParameter>>> GetRequirementParameters()

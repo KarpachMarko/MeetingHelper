@@ -21,6 +21,8 @@ public class AutoMapperConfig : Profile
         CreateMap<Questionnaire, Domain.Questionnaire>().ReverseMap();
         CreateMap<QuestionnaireRelation, Domain.QuestionnaireRelation>().ReverseMap();
         CreateMap<Requirement, Domain.Requirement>().ReverseMap();
+        CreateMap<RequirementParameter, Domain.RequirementParameter>().ReverseMap();
+        CreateMap<RequirementParameterInOption, Domain.RequirementParameterInOption>().ReverseMap();
         CreateMap<RequirementOption, Domain.RequirementOption>().ReverseMap();
         CreateMap<RequirementUser, Domain.RequirementUser>().ReverseMap();
         CreateMap<AppUser, Domain.Identity.AppUser>().ReverseMap();

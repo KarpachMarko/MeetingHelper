@@ -21,6 +21,11 @@ public class RequirementService :
         return Mapper.Map(await Repository.GetAllInMeeting(meetingId));
     }
 
+    public async Task<IEnumerable<Requirement>> GetAllInEvent(Guid eventId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetAllInEvent(eventId, userId));
+    }
+
     public async Task<Dictionary<Guid, double>> GetPersonsExpenseInMeeting(Guid meetingId, IUserService userService, IPaymentService paymentService)
     {
         var result = new Dictionary<Guid, double>();

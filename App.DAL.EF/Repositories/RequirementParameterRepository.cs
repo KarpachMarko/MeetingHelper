@@ -20,6 +20,34 @@ public class RequirementParameterRepository : BaseEntityUserDependentRepository<
     protected override IQueryable<Domain.RequirementParameter> CreateQuery(bool noTracking = true)
     {
         return base.CreateQuery(noTracking)
-            .Include(parameter => parameter.Requirement);
+            .Include(parameter => parameter.Requirement)
+            .ThenInclude(requirement => requirement!.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers);
+    }
+
+    public async Task<IEnumerable<RequirementParameter>> GetRequirementParameters(Guid requirementId, Guid userId)
+    {
+        var requirementParameters = await CreateQuery()
+            .Where(parameter => parameter.RequirementId.Equals(requirementId))
+            .ToListAsync();
+
+        return Mapper.Map(requirementParameters).Where(parameter => CheckOwnership(parameter, userId));
+    }
+
+    public async Task SetRequirementParameters(Guid requirementId, IEnumerable<RequirementParameter> parameters, Guid userId)
+    {
+        var requirementParameters = await CreateQuery()
+            .Where(parameter => parameter.RequirementId.Equals(requirementId))
+            .ToListAsync();
+        
+        Mapper.Map(requirementParameters)
+            .Where(parameter => CheckOwnership(parameter, userId))
+            .ToList()
+            .ForEach(parameter => Remove(parameter));
+        
+        parameters
+            .ToList()
+            .ForEach(parameter => Add(parameter));
     }
 }

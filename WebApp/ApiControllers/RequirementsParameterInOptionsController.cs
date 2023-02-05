@@ -10,12 +10,12 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class RequirementParameterInOptionController : ControllerBase
+    public class RequirementsParameterInOptionsController : ControllerBase
     {
         private readonly IAppBll _bll;
         private readonly IMapper<RequirementParameterInOption, App.BLL.DTO.RequirementParameterInOption> _mapper;
 
-        public RequirementParameterInOptionController(IAppBll bll, IMapper mapper)
+        public RequirementsParameterInOptionsController(IAppBll bll, IMapper mapper)
         {
             _bll = bll;
             _mapper = new RequirementParameterInOptionMapper(mapper);

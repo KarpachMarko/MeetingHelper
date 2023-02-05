@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.Controllers;
 
-public class RequirementParameterInOptionController : Controller
+public class RequirementsParameterInOptionsController : Controller
 {
     private readonly IAppBll _bll;
 
-    public RequirementParameterInOptionController(IAppBll bll)
+    public RequirementsParameterInOptionsController(IAppBll bll)
     {
         _bll = bll;
     }
