@@ -13,5 +13,6 @@ public interface IPaymentRepository : IEntityUserRepository<Payment, AppUser>, I
 public interface IPaymentRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
+    public Task<double> GetEventTotalPayments(Guid eventId);
     public Task<IEnumerable<TEntity>> GetRequirementPayments(Guid requirementId);
 }

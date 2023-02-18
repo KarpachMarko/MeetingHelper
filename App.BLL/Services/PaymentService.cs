@@ -19,4 +19,9 @@ public class PaymentService :
     {
         return Mapper.Map(await Repository.GetRequirementPayments(requirementId));
     }
+
+    public async Task<double> GetEventTotalPayments(Guid eventId)
+    {
+        return await Repository.GetEventTotalPayments(eventId);
+    }
 }

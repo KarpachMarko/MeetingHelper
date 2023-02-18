@@ -35,4 +35,13 @@ public class PaymentRepository :
 
         return Mapper.Map(payments);
     }
+
+    public async Task<double> GetEventTotalPayments(Guid eventId)
+    {
+        var payments = await CreateQueryUnsafe()
+            .Where(payment => payment.Requirement!.EventId.Equals(eventId))
+            .ToListAsync();
+        
+        return payments.Sum(payment => payment.Amount);
+    }
 }

@@ -18,7 +18,7 @@ public class Meeting : DomainEntityId
     public DateTime StartDate { get; set; }
     
     [DataType(DataType.Date)]
-    public DateTime EndDate { get; set; }
+    public DateTime EndDate { get; set; } // TODO: Make Optional
     
-    public double BudgetPerPerson { get; set; }
+    public double BudgetPerPerson { get; set; } // TODO: Make Optional
 }

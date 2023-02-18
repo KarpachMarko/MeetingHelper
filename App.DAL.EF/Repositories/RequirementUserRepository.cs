@@ -36,4 +36,23 @@ public class RequirementUserRepository :
 
         return requirementUser == null ? base.Add(entity) : Mapper.Map(requirementUser)!;
     }
+
+    public async Task<IEnumerable<RequirementUser>> GetRequirementUsers(Guid requirementId, Guid userId)
+    {
+        var requirementUsers = await CreateQueryUnsafe()
+            .Include(reqUser => reqUser.Requirement)
+            .ThenInclude(requirement => requirement!.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers)
+            .Where(reqUser => reqUser.RequirementId.Equals(requirementId))
+            .ToListAsync();
+
+        if (requirementUsers.FirstOrDefault()?.Requirement?.Event?.Meeting?.MeetingUsers?
+            .Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false)
+        {
+            return Mapper.Map(requirementUsers);
+        }
+
+        return new List<RequirementUser>();
+    }
 }

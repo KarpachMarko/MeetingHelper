@@ -13,5 +13,5 @@ public interface IRequirementUserRepository : IEntityUserRepository<RequirementU
 public interface IRequirementUserRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetRequirementUsers(Guid requirementId, Guid userId);
 }

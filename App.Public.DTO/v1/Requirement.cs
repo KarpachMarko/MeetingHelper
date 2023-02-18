@@ -19,4 +19,5 @@ public class Requirement : DomainEntityId
     public DateTime PaymentDate { get; set; }
 
     public Guid EventId { get; set; }
+    // TODO: Add status field (InProgress, Done, Rejected)
 }

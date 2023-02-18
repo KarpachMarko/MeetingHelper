@@ -22,6 +22,19 @@ public class PaymentsController : ControllerBase
         _mapper = new PaymentMapper(mapper);
     }
 
+    [HttpGet("requirement/{requirementId}")]
+    public async Task<ActionResult<double>> GetRequirementPayments(Guid requirementId)
+    {
+        var requirementPayments = await _bll.Payments.GetRequirementPayments(requirementId);
+        return Ok(_mapper.Map(requirementPayments));
+    }
+    
+    [HttpGet("event/{eventId}/total")]
+    public async Task<ActionResult<double>> GetEventPayments(Guid eventId)
+    {
+        return await _bll.Payments.GetEventTotalPayments(eventId);
+    }
+
     // GET: api/Payments
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Payment>>> GetPayments()
