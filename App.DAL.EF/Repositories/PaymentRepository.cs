@@ -27,6 +27,18 @@ public class PaymentRepository :
         .Include(payment => payment.Requirement);
     }
 
+    public async Task<IEnumerable<Payment>> GetMeetingPayments(Guid meetingId)
+    {
+        var payments = await CreateQueryUnsafe()
+            .Include(payment => payment.Requirement)
+            .ThenInclude(requirement => requirement!.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .Where(payment => payment.Requirement!.Event!.Meeting!.Id.Equals(meetingId))
+            .ToListAsync();
+
+        return Mapper.Map(payments);
+    }
+
     public async Task<IEnumerable<Payment>> GetRequirementPayments(Guid requirementId)
     {
         var payments = await CreateQueryUnsafe()

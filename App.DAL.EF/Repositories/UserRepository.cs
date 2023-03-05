@@ -23,9 +23,10 @@ public class UserRepository : BaseEntityRepository<AppUser, Domain.Identity.AppU
         var users = await CreateQuery()
             .Include(user => user.RequirementUsers)
             .ToListAsync();
-        
+
         var usersInRequirement = users.FindAll(user =>
-            users.SelectMany(x => x.RequirementUsers!).Select(x => x.UserId).Contains(user.Id));
+            users.SelectMany(x => x.RequirementUsers!).Where(reqUser => reqUser.RequirementId.Equals(requirementId))
+                .Select(x => x.UserId).Contains(user.Id));
 
         return Mapper.Map(usersInRequirement);
     }

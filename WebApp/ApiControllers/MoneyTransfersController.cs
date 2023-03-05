@@ -21,6 +21,21 @@ public class MoneyTransfersController : ControllerBase
         _mapper = new MoneyTransferMapper(mapper);
     }
 
+    [HttpGet("meeting/{meetingId}")]
+    public async Task<ActionResult<IEnumerable<MoneyTransfer>>> GetMeetingMoneyTransfers(Guid meetingId)
+    {
+        var moneyTransfers = await _bll.MoneyTransfers.GetMeetingMoneyTransfers(meetingId);
+        return Ok(_mapper.Map(moneyTransfers));
+    }
+    
+    [HttpGet("meeting/{meetingId}/debts")]
+    public async Task<ActionResult<IEnumerable<MoneyTransfer>>> GetDebtsMoneyTransfers(Guid meetingId)
+    {
+        var moneyTransfers = await _bll.MoneyTransfers.GetCloseDebtsTransfers(
+            meetingId, _bll.Requirements, _bll.Users, _bll.Payments);
+        return Ok(_mapper.Map(moneyTransfers));
+    }
+
     // GET: api/MoneyTransfers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MoneyTransfer>>> GetMoneyTransfers()

@@ -4,12 +4,14 @@ using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 [ApiController]
 public class PaymentsController : ControllerBase
 {
@@ -22,8 +24,15 @@ public class PaymentsController : ControllerBase
         _mapper = new PaymentMapper(mapper);
     }
 
+    [HttpGet("meeting/{meetingId}")]
+    public async Task<ActionResult<IEnumerable<Payment>>> GetMeetingPayments(Guid meetingId)
+    {
+        var meetingPayments = await _bll.Payments.GetMeetingPayments(meetingId);
+        return Ok(_mapper.Map(meetingPayments));
+    }
+    
     [HttpGet("requirement/{requirementId}")]
-    public async Task<ActionResult<double>> GetRequirementPayments(Guid requirementId)
+    public async Task<ActionResult<IEnumerable<Payment>>> GetRequirementPayments(Guid requirementId)
     {
         var requirementPayments = await _bll.Payments.GetRequirementPayments(requirementId);
         return Ok(_mapper.Map(requirementPayments));

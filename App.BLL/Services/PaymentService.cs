@@ -15,6 +15,11 @@ public class PaymentService :
     {
     }
 
+    public async Task<IEnumerable<Payment>> GetMeetingPayments(Guid meetingId)
+    {
+        return Mapper.Map(await Repository.GetMeetingPayments(meetingId));
+    }
+
     public async Task<IEnumerable<Payment>> GetRequirementPayments(Guid requirementId)
     {
         return Mapper.Map(await Repository.GetRequirementPayments(requirementId));
