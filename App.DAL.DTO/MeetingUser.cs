@@ -10,6 +10,7 @@ public class MeetingUser : DomainEntityId, IDomainEntityUser<AppUser>
 {
     [Required]
     public EMeetingRole? Role { get; set; }
+    public bool Going { get; set; } = true;
     
     public Guid MeetingId { get; set; }
     [Required]
