@@ -12,12 +12,15 @@ public interface IAppUnitOfWork : IUnitOfWork
     IEventUserRepository EventUsers { get; }
     IMeetingRepository Meetings { get; }
     IMeetingUserRepository MeetingUsers { get; }
+    IMeetingInviteRepository MeetingInvites { get; }
     IMoneyTransferRepository MoneyTransfers { get; }
     IPaymentRepository Payments { get; }
     IQuestionnaireRelationRepository QuestionnaireRelations { get; }
     IQuestionnaireRepository Questionnaires { get; }
     IRequirementOptionRepository RequirementOptions { get; }
     IRequirementRepository Requirements { get; }
+    IRequirementParameterRepository RequirementParameters { get; }
+    IRequirementParameterInOptionRepository RequirementParameterInOptions { get; }
     IRequirementUserRepository RequirementUsers { get; }
     IUserRepository Users { get; }
 }

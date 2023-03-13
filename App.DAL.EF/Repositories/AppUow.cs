@@ -42,6 +42,10 @@ public class AppUow : BaseUow<AppDbContext>, IAppUnitOfWork
     public IMeetingUserRepository MeetingUsers =>
         _meetingUsers ??= new MeetingUserRepository(UowDbContext, new MeetingUserMapper(_mapper));
 
+    private IMeetingInviteRepository? _meetingInvites;
+    public IMeetingInviteRepository MeetingInvites => _meetingInvites ??=
+        new MeetingInviteRepository(UowDbContext, new MeetingInviteMapper(_mapper));
+
     private IMoneyTransferRepository? _moneyTransfers;
     public IMoneyTransferRepository MoneyTransfers => _moneyTransfers ??=
         new MoneyTransferRepository(UowDbContext, new MoneyTransferMapper(_mapper));
@@ -64,6 +68,15 @@ public class AppUow : BaseUow<AppDbContext>, IAppUnitOfWork
     private IRequirementRepository? _requirements;
     public IRequirementRepository Requirements =>
         _requirements ??= new RequirementRepository(UowDbContext, new RequirementMapper(_mapper));
+
+    private IRequirementParameterRepository? _requirementParameter;
+    public IRequirementParameterRepository RequirementParameters => _requirementParameter ??=
+        new RequirementParameterRepository(UowDbContext, new RequirementParameterMapper(_mapper));
+    
+    private IRequirementParameterInOptionRepository? _requirementParameterInOption;
+    public IRequirementParameterInOptionRepository RequirementParameterInOptions =>
+        _requirementParameterInOption ??=
+            new RequirementParameterInOptionRepository(UowDbContext, new RequirementParameterInOptionMapper(_mapper));
 
     private IRequirementUserRepository? _requirementUsers;
     public IRequirementUserRepository RequirementUsers => _requirementUsers ??=

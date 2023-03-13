@@ -30,9 +30,20 @@ public class MeetingUserRepository :
 
     public async Task<IEnumerable<MeetingUser>> GetMeetingUsersInMeeting(Guid meetingId, Guid userId)
     {
-        var meetingUsers = await CreateQueryUnsafe().Where(meetingUser => meetingUser.MeetingId.Equals(meetingId)).ToListAsync();
+        var meetingUsers = await CreateQueryUnsafe().Where(meetingUser => meetingUser.MeetingId.Equals(meetingId))
+            .ToListAsync();
         // To get list of meetingUsers you also should be in this meeting. 
-        return meetingUsers.Any(meetingUser => meetingUser.UserId.Equals(userId)) ? 
-            Mapper.Map(meetingUsers) : new List<MeetingUser>();
+        return meetingUsers.Any(meetingUser => meetingUser.UserId.Equals(userId))
+            ? Mapper.Map(meetingUsers)
+            : new List<MeetingUser>();
+    }
+
+    public override MeetingUser Add(MeetingUser entity)
+    {
+        var meetingUser = CreateQueryUnsafe()
+            .FirstOrDefault(meetingUser => meetingUser.MeetingId.Equals(entity.MeetingId) &&
+                                           meetingUser.UserId.Equals(entity.UserId));
+
+        return meetingUser == null ? base.Add(entity) : Mapper.Map(meetingUser)!;
     }
 }

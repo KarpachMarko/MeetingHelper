@@ -36,4 +36,13 @@ public class RequirementRepository : BaseEntityUserDependentRepository<Requireme
 
         return Mapper.Map(requirements);
     }
+
+    public async Task<IEnumerable<Requirement>> GetAllInEvent(Guid eventId, Guid userId)
+    {
+        var requirements = await CreateQuery()
+            .Where(requirement => requirement.EventId.Equals(eventId))
+            .ToListAsync();
+
+        return Mapper.Map(requirements).Where(requirement => CheckOwnership(requirement, userId)).ToList();
+    }
 }

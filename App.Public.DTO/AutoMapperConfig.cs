@@ -15,11 +15,14 @@ public class AutoMapperConfig : Profile
         CreateMap<EventUser, BLL.DTO.EventUser>().ReverseMap();
         CreateMap<Meeting, BLL.DTO.Meeting>().ReverseMap();
         CreateMap<MeetingUser, BLL.DTO.MeetingUser>().ReverseMap();
+        CreateMap<MeetingInvite, BLL.DTO.MeetingInvite>().ReverseMap();
         CreateMap<MoneyTransfer, BLL.DTO.MoneyTransfer>().ReverseMap();
         CreateMap<Payment, BLL.DTO.Payment>().ReverseMap();
         CreateMap<Questionnaire, BLL.DTO.Questionnaire>().ReverseMap();
         CreateMap<QuestionnaireRelation, BLL.DTO.QuestionnaireRelation>().ReverseMap();
         CreateMap<Requirement, BLL.DTO.Requirement>().ReverseMap();
+        CreateMap<RequirementParameter, BLL.DTO.RequirementParameter>().ReverseMap();
+        CreateMap<RequirementParameterInOption, BLL.DTO.RequirementParameterInOption>().ReverseMap();
         CreateMap<RequirementOption, BLL.DTO.RequirementOption>().ReverseMap();
         CreateMap<RequirementUser, BLL.DTO.RequirementUser>().ReverseMap();
         CreateMap<AppUser, BLL.DTO.Identity.AppUser>().ReverseMap();

@@ -4,6 +4,7 @@ using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 public class RequirementUsersController : ControllerBase
 {
     private readonly IAppBll _bll;
@@ -22,6 +24,13 @@ public class RequirementUsersController : ControllerBase
         _mapper = new RequirementUserMapper(mapper);
     }
 
+    [HttpGet("requirement/{requirementId}")]
+    public async Task<ActionResult<IEnumerable<RequirementUser>>> GetRequirementUsers(Guid requirementId)
+    {
+        var requirementUsers = await _bll.RequirementUsers.GetRequirementUsers(requirementId, User.GetUserId());
+        return Ok(_mapper.Map(requirementUsers));
+    }
+    
     // GET: api/RequirementUsers
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RequirementUser>>> GetRequirementUsers()

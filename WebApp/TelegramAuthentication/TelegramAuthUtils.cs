@@ -39,12 +39,19 @@ public static class TelegramAuthUtils
             }
         }
 
+        if (!(dataDict.TryGetValue("id", out var id) && dataDict.TryGetValue("username", out var username)))
+        {
+            return null;
+        }
+        dataDict.TryGetValue("first_name", out var firstName);
+        dataDict.TryGetValue("last_name", out var lastName); ;
+        
         return new TelegramData
         {
-            TelegramId = dataDict["id"],
-            FirstName = dataDict["first_name"],
-            LastName = dataDict["last_name"],
-            UserName = dataDict["username"]
+            TelegramId = id,
+            FirstName = firstName,
+            LastName = lastName,
+            UserName = username
         };
     }
 

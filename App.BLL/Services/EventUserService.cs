@@ -14,4 +14,9 @@ public class EventUserService :
     public EventUserService(IEventUserRepository repository, IMapper<EventUser, DAL.DTO.EventUser> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<IEnumerable<EventUser>> GetEventUsersInEvent(Guid eventId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetEventUsersInEvent(eventId, userId));
+    }
 }

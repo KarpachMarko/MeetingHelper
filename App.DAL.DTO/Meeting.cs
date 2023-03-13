@@ -22,6 +22,7 @@ public class Meeting : DomainEntityId
     
     public double BudgetPerPerson { get; set; }
     
+    public ICollection<MeetingInvite>? MeetingInvites { get; set; }
     public ICollection<MeetingUser>? MeetingUsers { get; set; }
     public ICollection<Event>? Events { get; set; }
     public ICollection<QuestionnaireRelation>? QuestionnaireRelations { get; set; }

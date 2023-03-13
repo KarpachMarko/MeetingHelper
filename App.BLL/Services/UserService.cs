@@ -12,6 +12,11 @@ public class UserService : BaseEntityService<AppUser, DAL.DTO.Identity.AppUser, 
     {
     }
 
+    public async Task<Guid?> GetByTgId(string userTgId)
+    {
+        return await Repository.GetByTgId(userTgId);
+    }
+
     public async Task<IEnumerable<AppUser>> GetRequirementUsers(Guid requirementId)
     {
         return Mapper.Map(await Repository.GetRequirementUsers(requirementId));

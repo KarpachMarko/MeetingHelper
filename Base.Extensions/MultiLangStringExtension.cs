@@ -30,6 +30,7 @@ public static class MultiLangStringExtension
                 if (entityFromDbProp.GetSetMethod() == null && propertyInfo.GetSetMethod(true) == null) continue;
                 if (entityFromDbProp.PropertyType != typeof(string) &&
                     typeof(IEnumerable).IsAssignableFrom(propertyInfo.PropertyType)) continue;
+                if (typeof(IDomainEntityId).IsAssignableFrom(propertyInfo.PropertyType)) continue;
                 if (entityFromDbProp.Name == "ConcurrencyStamp") continue;
 
                 var value = propertyInfo.GetValue(updatedEntity);

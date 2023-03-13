@@ -20,10 +20,13 @@ public class EventService : BaseEntityUserDependentService<Event, DAL.DTO.Event,
     public async Task<IEnumerable<Event>> GetFirstMeetingEvents(Guid meetingId, Guid userId,
         IEventNavigationService eventNavigationService)
     {
+        var meetingEvents = (await GetMeetingEvents(meetingId, userId)).ToList();
+        if (meetingEvents.Count == 0)
+        {
+            return new List<Event>();
+        }
         var eventNavigations = (await eventNavigationService.GetMeetingEventNavigations(meetingId, userId)).ToList();
-        var firstEventNavigations = eventNavigations
-            .Select(navigation => navigation.PreviousEvent!)
-            .Where(meetingEvent => !eventNavigations.Any(navigation => navigation.NextEventId.Equals(meetingEvent.Id)));
+        var firstEventNavigations = meetingEvents.Where(meetingEvent => eventNavigations.All(navigation => navigation.NextEventId != meetingEvent.Id));
 
         return firstEventNavigations;
     }

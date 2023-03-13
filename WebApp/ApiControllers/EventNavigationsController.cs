@@ -4,6 +4,7 @@ using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,6 +12,7 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 public class EventNavigationsController : ControllerBase
 {
     private readonly IAppBll _bll;
@@ -22,6 +24,13 @@ public class EventNavigationsController : ControllerBase
         _mapper = new EventNavigationMapper(mapper);
     }
 
+    [HttpGet("meeting/{id}")]
+    public async Task<ActionResult<IEnumerable<EventNavigation>>> GetEventNavigations(Guid id)
+    {
+        var eventNavigations = await _bll.EventNavigations.GetMeetingEventNavigations(id, User.GetUserId());
+        return Ok(_mapper.Map(eventNavigations));
+    }
+    
     // GET: api/EventNavigations
     [HttpGet]
     public async Task<ActionResult<IEnumerable<EventNavigation>>> GetEventNavigations()

@@ -54,6 +54,9 @@ public class AppBll : BaseBll<IAppUnitOfWork>, IAppBll
     public IMeetingUserService MeetingUsers =>
         _meetingUsers ??= new MeetingUserService(UnitOfWork.MeetingUsers, new MeetingUserMapper(_mapper));
 
+    private IMeetingInviteService? _meetingInvites;
+    public IMeetingInviteService MeetingInvites => _meetingInvites ??= new MeetingInviteService(UnitOfWork.MeetingInvites, new MeetingInviteMapper(_mapper));
+
     private IMoneyTransferService? _moneyTransfers;
     public IMoneyTransferService MoneyTransfers => _moneyTransfers ??=
         new MoneyTransferService(UnitOfWork.MoneyTransfers, new MoneyTransferMapper(_mapper));
@@ -63,7 +66,7 @@ public class AppBll : BaseBll<IAppUnitOfWork>, IAppBll
 
     private IQuestionnaireRelationService? _questionnaireRelations;
     public IQuestionnaireRelationService QuestionnaireRelations => _questionnaireRelations ??=
-        new QuestionnaireRelationService(UnitOfWork.QuestionnaireRelations, new QuestionnaireRelatrionMapper(_mapper));
+        new QuestionnaireRelationService(UnitOfWork.QuestionnaireRelations, new QuestionnaireRelationMapper(_mapper));
 
     private IQuestionnaireService? _questionnaires;
     public IQuestionnaireService Questionnaires => _questionnaires ??=
@@ -76,6 +79,15 @@ public class AppBll : BaseBll<IAppUnitOfWork>, IAppBll
     private IRequirementService? _requirements;
     public IRequirementService Requirements =>
         _requirements ??= new RequirementService(UnitOfWork.Requirements, new RequirementMapper(_mapper));
+
+    private IRequirementParameterService? _requirementParameter;
+    public IRequirementParameterService RequirementParameters => _requirementParameter ??=
+        new RequirementParameterService(UnitOfWork.RequirementParameters, new RequirementParameterMapper(_mapper));
+
+    private IRequirementParameterInOptionService? _requirementParameterInOption;
+    public IRequirementParameterInOptionService RequirementsParameterInOptions => _requirementParameterInOption ??=
+        new RequirementParameterInOptionService(UnitOfWork.RequirementParameterInOptions,
+            new RequirementParameterInOptionMapper(_mapper));
 
     private IRequirementUserService? _requirementUsers;
     public IRequirementUserService RequirementUsers => _requirementUsers ??=

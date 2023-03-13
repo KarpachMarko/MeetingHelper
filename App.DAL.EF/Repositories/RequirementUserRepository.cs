@@ -19,12 +19,40 @@ public class RequirementUserRepository :
     protected override IQueryable<Domain.RequirementUser> CreateQuery(Guid userId, bool noTracking = true)
     {
         return base.CreateQuery(userId, noTracking)
-        .Include(requirementUser => requirementUser.Requirement);
+            .Include(requirementUser => requirementUser.Requirement);
     }
 
     protected override IQueryable<Domain.RequirementUser> CreateQueryUnsafe(bool noTracking = true)
     {
         return base.CreateQueryUnsafe(noTracking)
-        .Include(requirementUser => requirementUser.Requirement);
+            .Include(requirementUser => requirementUser.Requirement);
+    }
+
+    public override RequirementUser Add(RequirementUser entity)
+    {
+        var requirementUser = CreateQueryUnsafe()
+            .FirstOrDefault(requirementUser => requirementUser.RequirementId.Equals(entity.RequirementId) &&
+                                               requirementUser.UserId.Equals(entity.UserId));
+
+        return requirementUser == null ? base.Add(entity) : Mapper.Map(requirementUser)!;
+    }
+
+    public async Task<IEnumerable<RequirementUser>> GetRequirementUsers(Guid requirementId, Guid userId)
+    {
+        var requirementUsers = await CreateQueryUnsafe()
+            .Include(reqUser => reqUser.Requirement)
+            .ThenInclude(requirement => requirement!.Event)
+            .ThenInclude(meetingEvent => meetingEvent!.Meeting)
+            .ThenInclude(meeting => meeting!.MeetingUsers)
+            .Where(reqUser => reqUser.RequirementId.Equals(requirementId))
+            .ToListAsync();
+
+        if (requirementUsers.FirstOrDefault()?.Requirement?.Event?.Meeting?.MeetingUsers?
+            .Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false)
+        {
+            return Mapper.Map(requirementUsers);
+        }
+
+        return new List<RequirementUser>();
     }
 }

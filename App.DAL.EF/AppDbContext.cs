@@ -14,11 +14,14 @@ public class AppDbContext : IdentityDbContext<AppUser, AppRole, Guid>
     public DbSet<EventUser> EventUsers { get; set; } = default!;
     public DbSet<Meeting> Meetings { get; set; } = default!;
     public DbSet<MeetingUser> MeetingUsers { get; set; } = default!;
+    public DbSet<MeetingInvite> MeetingInvites { get; set; } = default!;
     public DbSet<MoneyTransfer> MoneyTransfers { get; set; } = default!;
     public DbSet<Payment> Payments { get; set; } = default!;
     public DbSet<Questionnaire> Questionnaires { get; set; } = default!;
     public DbSet<QuestionnaireRelation> QuestionnaireRelations { get; set; } = default!;
     public DbSet<Requirement> Requirements { get; set; } = default!;
+    public DbSet<RequirementParameter> RequirementParameters { get; set; } = default!;
+    public DbSet<RequirementParameterInOption> RequirementsParameterInOptions { get; set; } = default!;
     public DbSet<RequirementOption> RequirementOptions { get; set; } = default!;
     public DbSet<RequirementUser> RequirementUsers { get; set; } = default!;
 

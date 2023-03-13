@@ -12,12 +12,15 @@ public interface IAppBll : IBll
     IEventUserService EventUsers { get; }
     IMeetingService Meetings { get; }
     IMeetingUserService MeetingUsers { get; }
+    IMeetingInviteService MeetingInvites { get; }
     IMoneyTransferService MoneyTransfers { get; }
     IPaymentService Payments { get; }
     IQuestionnaireRelationService QuestionnaireRelations { get; }
     IQuestionnaireService Questionnaires { get; }
     IRequirementOptionService RequirementOptions { get; }
     IRequirementService Requirements { get; }
+    IRequirementParameterService RequirementParameters { get; }
+    IRequirementParameterInOptionService RequirementsParameterInOptions { get; }
     IRequirementUserService RequirementUsers { get; }
     IUserService Users { get; }
 }

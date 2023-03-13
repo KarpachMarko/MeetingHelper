@@ -2,7 +2,7 @@
 
 public enum EEventStatus
 {
-    MayBeGoing = 0,
+    NotGoing = 0,
     Going = 1,
     Responsible = 2
 }

@@ -14,4 +14,9 @@ public class RequirementUserService :
     public RequirementUserService(IRequirementUserRepository repository, IMapper<RequirementUser, DAL.DTO.RequirementUser> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<IEnumerable<RequirementUser>> GetRequirementUsers(Guid requirementId, Guid userId)
+    {
+        return Mapper.Map(await Repository.GetRequirementUsers(requirementId, userId));
+    }
 }

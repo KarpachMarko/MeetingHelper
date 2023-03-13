@@ -13,5 +13,5 @@ public interface IEventUserRepository : IEntityUserRepository<EventUser, AppUser
 public interface IEventUserRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<TEntity>> GetEventUsersInEvent(Guid eventId, Guid userId);
 }

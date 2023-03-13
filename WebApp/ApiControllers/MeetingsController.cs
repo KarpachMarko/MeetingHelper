@@ -1,12 +1,14 @@
+using App.BLL.DTO;
 using App.Contracts.BLL;
+using App.Domain.Enums;
 using App.Public.DTO.Mappers;
-using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
 using Base.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Meeting = App.Public.DTO.v1.Meeting;
 
 namespace WebApp.ApiControllers;
 
@@ -82,6 +84,12 @@ public class MeetingsController : ControllerBase
     {
         meeting.Id = Guid.NewGuid();
         _bll.Meetings.Add(_mapper.Map(meeting)!);
+        _bll.MeetingUsers.Add(new MeetingUser
+        {
+            Role = EMeetingRole.Creator,
+            MeetingId = meeting.Id,
+            UserId = User.GetUserId()
+        });
         await _bll.SaveChangesAsync();
 
         return CreatedAtAction("GetMeeting", new { id = meeting.Id }, meeting);

@@ -20,7 +20,7 @@ public class EventRepository : BaseEntityUserDependentRepository<Event, Domain.E
             .ThenInclude(meeting => meeting!.MeetingUsers);
     }
 
-    public static bool CheckOwnership(Event eventObj, Guid userId)
+    private static bool CheckOwnership(Event eventObj, Guid userId)
     {
         return eventObj.Meeting?.MeetingUsers?.Any(meetingUser => meetingUser.UserId.Equals(userId)) ?? false;
     }
@@ -30,6 +30,6 @@ public class EventRepository : BaseEntityUserDependentRepository<Event, Domain.E
         var meetingEvents = Mapper.Map(
             await CreateQuery().Where(meetingEvent => meetingEvent.MeetingId.Equals(meetingId)).ToListAsync()).ToList();
         
-        return CheckOwnership(meetingEvents.First(), userId) ? meetingEvents : new List<Event>();
+        return meetingEvents.Count > 0 && CheckOwnership(meetingEvents.First(), userId) ? meetingEvents : new List<Event>();
     }
 }
