@@ -10,18 +10,19 @@ using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using WebApp.TelegramAuthentication;
+using AutoMapperConfig = App.Public.DTO.AutoMapperConfig;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("NpgsqlConnection");
+var connectionString = Environment.GetEnvironmentVariable("connectionString") ?? "";
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddScoped<IAppUnitOfWork, AppUow>();
 builder.Services.AddScoped<IAppBll, AppBll>();
 builder.Services.AddAutoMapper(
-    typeof(App.Public.DTO.AutoMapperConfig),
+    typeof(AutoMapperConfig),
     typeof(App.BLL.AutoMapperConfig),
     typeof(App.DAL.EF.AutoMapperConfig)
 );
