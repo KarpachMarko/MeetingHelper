@@ -11,4 +11,14 @@ public class RequirementParameterInOptionService : BaseEntityService<Requirement
     public RequirementParameterInOptionService(IRequirementParameterInOptionRepository repository, IMapper<RequirementParameterInOption, DAL.DTO.RequirementParameterInOption> mapper) : base(repository, mapper)
     {
     }
+
+    public async Task<IEnumerable<Guid>> GetOptionParametersId(Guid optionId)
+    {
+        return await Repository.GetOptionParametersId(optionId);
+    }
+
+    public async Task SetParameters(Guid optionId, IEnumerable<RequirementParameterInOption> parameterInOptions, Guid userId)
+    {
+        await Repository.SetParameters(optionId, Mapper.Map(parameterInOptions), userId);
+    }
 }

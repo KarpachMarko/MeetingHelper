@@ -22,6 +22,11 @@ public class RequirementOptionRepository :
             .Include(option => option.Requirement);
     }
 
+    public async Task<IEnumerable<RequirementOption>> GetRequirementOptions(Guid requirementId)
+    {
+        return Mapper.Map(await CreateQuery().Where(option => option.RequirementId.Equals(requirementId)).ToListAsync());
+    }
+
     public async Task<RequirementOption?> GetSelected(Guid requirementId)
     {
         return Mapper.Map(await CreateQuery()

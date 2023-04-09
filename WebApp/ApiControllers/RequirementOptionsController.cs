@@ -3,6 +3,8 @@ using App.Public.DTO.Mappers;
 using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ namespace WebApp.ApiControllers;
 
 [Route("api/[controller]")]
 [ApiController]
+[Authorize(AuthenticationSchemes = "TelegramAuth")]
 public class RequirementOptionsController : ControllerBase
 {
     private readonly IAppBll _bll;
@@ -19,6 +22,13 @@ public class RequirementOptionsController : ControllerBase
     {
         _bll = bll;
         _mapper = new RequirementOptionMapper(mapper);
+    }
+    
+    [HttpGet("requirement/{requirementId}")]
+    public async Task<ActionResult<IEnumerable<RequirementOption>>> GetRequirementsInEvent(Guid requirementId)
+    {
+        var options = await _bll.RequirementOptions.GetRequirementOptions(requirementId);
+        return Ok(_mapper.Map(options));
     }
 
     // GET: api/RequirementOptions

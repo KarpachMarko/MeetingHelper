@@ -12,5 +12,6 @@ public interface IRequirementParameterInOptionRepository : IEntityRepository<Req
 public interface IRequirementParameterInOptionRepositoryCustom<TEntity>
     where TEntity : IDomainEntityId
 {
-    
+    public Task<IEnumerable<Guid>> GetOptionParametersId(Guid optionId);
+    public Task SetParameters(Guid optionId, IEnumerable<TEntity> parameterInOptions, Guid userId);
 }

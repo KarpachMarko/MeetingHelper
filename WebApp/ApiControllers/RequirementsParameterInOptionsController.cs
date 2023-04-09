@@ -3,6 +3,8 @@ using App.Public.DTO.Mappers;
 using App.Public.DTO.v1;
 using AutoMapper;
 using Base.Contracts;
+using Base.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +12,7 @@ namespace WebApp.ApiControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(AuthenticationSchemes = "TelegramAuth")]
     public class RequirementsParameterInOptionsController : ControllerBase
     {
         private readonly IAppBll _bll;
@@ -21,6 +24,23 @@ namespace WebApp.ApiControllers
             _mapper = new RequirementParameterInOptionMapper(mapper);
         }
 
+        [HttpGet("options/{optionId}")]
+        public async Task<ActionResult<IEnumerable<Guid>>> GetRequirementParameters(Guid optionId)
+        {
+            var parameters = await _bll.RequirementsParameterInOptions.GetOptionParametersId(optionId);
+            return Ok(parameters);
+        }
+        
+        [HttpPut("options/{optionId}")]
+        public async Task<ActionResult<IEnumerable<RequirementParameter>>> SetRequirementParameters(Guid optionId, IEnumerable<RequirementParameterInOption> parameters)
+        {
+            await _bll.RequirementsParameterInOptions.SetParameters(optionId, _mapper.Map(parameters), User.GetUserId());
+        
+            await _bll.SaveChangesAsync();
+        
+            return NoContent();
+        }
+        
         // GET: api/RequirementParameterInOption
         [HttpGet]
         public async Task<ActionResult<IEnumerable<RequirementParameterInOption>>> GetRequirementsParameterInOptions()

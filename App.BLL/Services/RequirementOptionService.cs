@@ -14,6 +14,11 @@ public class RequirementOptionService :
     {
     }
 
+    public async Task<IEnumerable<RequirementOption>> GetRequirementOptions(Guid requirementId)
+    {
+        return Mapper.Map(await Repository.GetRequirementOptions(requirementId));
+    }
+
     public async Task<RequirementOption?> GetSelected(Guid requirementId)
     {
         return Mapper.Map(await Repository.GetSelected(requirementId));
